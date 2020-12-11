@@ -12,11 +12,16 @@ messyMain = do
 
 
 
+
+
+
 quicksort [] = []
-quicksort (x: xs) = lesser ++ [x] ++ greater
+quicksort (x: xs) = quicksort ( lesser ) ++ [x] ++ quicksort (greater)
     where 
-        lesser = filter ( < x ) xs
-        greater = filter ( >= x) xs 
+        lesser =  filter ( < x ) xs
+        greater = filter ( >= x) xs  
+
+
 
 
 main :: IO()
