@@ -24,6 +24,7 @@ x = 100
 overwrite4 x = x + 10
             where x = 1
 
+-- whatever x we pass to overwrite4 it gets overwritten by 1
 
 
 
