@@ -63,14 +63,13 @@ counter x = let x = x + 2
 
 counter2 x =  (\ x ->  (  \x -> ( \x -> x ) x + 4 ) x + 3 ) x + 2 
 
-
-
 -- doesn't work and stays stuck. why does it stay stuck?
 counter3 x = let x = x + 1
             in
-             let x = x + 1
-             in
-              let x = x + 1
-                in 
-                    x
+            let x = x + 1
+            in
+            let x = x + 1
+            in 
+                x
+
 
