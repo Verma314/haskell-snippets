@@ -35,4 +35,68 @@ testFxn4 =   do
 testFxn5 givenList = sortBy compareByFxn givenList    
 
 
+
+
+-- rewrite compareLastNames using compare
+
+{--
+compareLastNames name1 name2 = if lastName1 > lastName2
+                               then GT
+                               else if lastName1 < lastName2
+                                    then LT
+                                    else EQ
+                        where lastName1 = snd name1
+                             lastName2 = snd name2
+--}
+
+compareLastNames name1 name2 = compare lastName1 lastName2
+                                where lastName1 = snd name1
+                                      lastName2 = snd name2
  
+
+
+
+-- get address function 
+
+newYorkFunction name = name ++ "ny " ++ " - " ++ "New York 13134"
+sfFunction name = name ++ "sf " ++ " - " ++ " San Fran 1342432"
+delhiFunction name = name ++ "del " ++ " - " ++ " Delhi 1342432"
+
+                
+
+getCityFxn location = case location of 
+                        "delhi" -> delhiFunction
+                        "sf" -> sfFunction
+                        "ny" -> newYorkFunction
+                        _ -> (\x -> x ++ "  generic city -- wildcard")
+                    
+
+
+abc = getCityFxn "sf"
+
+
+genFunction cityName = getCityFxn cityName
+
+genAddress cityName name = (genFunction cityName) name
+
+
+genAddress2 cityName name = (getCityFxn cityName) name
+
+genAddress3 cityName name = locationFunction name
+                        where locationFunction = (getCityFxn cityName)
+
+genAddress4 city name = locationFunction name
+                where locationFunction = getCityFxn city
+
+
+{-
+getCityFxn city = case city of 
+    "delhi" -> delhiFunction
+    "sf" -> sfFunction
+    "ny" -> newYorkFunction
+    _  -> (\name -> (fst name) ++ " " ++ (snd name) ++ " Unknown City" )
+
+generateAddress name city = locationFunction name
+                where locationFunction = getCityFxn city
+
+-}
