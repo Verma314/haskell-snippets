@@ -31,5 +31,18 @@ exp2 y (x:xs)  =   if x < y then  exp2 y xs
                 else  x : exp2 y xs
 
 
+-----------
 
+ifEvenApplyFxn2 x fxn = if even x then fxn x
+                        else x
 
+k = ifEvenApplyFxn2 9 (\ x -> x ^ 3 )
+
+myFunc :: IO()
+myFunc = do
+    print "Input number"
+    input1 <- getLine
+    let x0 = (read input1 :: Int)
+    print (ifEvenApplyFxn2 x0 (\ x -> x * 2 ))
+
+----
