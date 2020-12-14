@@ -33,3 +33,18 @@ flipBinaryArgs myfunction = (\x y -> myfunction y x)
 ```
 * "Closures combine lambda functions and first-class functions to give you amazing power." Will Kurt.
 
+An example of this power
+```
+
+ifEven func x = if even x
+                then func x     
+                else x
+
+
+ifEvenInc = ifEven ( \x -> x + 1)
+
+ifEvenDouble = ifEven (\x -> x * 2 )
+
+```
+
+

@@ -103,3 +103,35 @@ test2 b = subtract2Alt b
 --- or
 
 flipedNegativeSign2 = flip (-) 2
+
+
+--- 5.1 ----
+{-
+Now that you know about partial application, 
+you no longer need to use genIfEvenX. Redefine ifEvenInc, ifEvenDouble, and ifEvenSquare by using ifEven and partial application.
+-}
+
+ifEven func x = if even x
+                then func x     
+                else x
+
+ifEvenInc = ifEven ( \x -> x + 1)
+
+ifEvenDouble = ifEven (\x -> x * 2 )
+
+
+--
+--or, without using partial functions
+ifEvenCustom func = (\ x -> if even x then func x else x)
+--
+
+
+{-
+write a function binaryPartialApplication that takes a binary function and one argument and returns a new function waiting for the missing argument.
+
+-}
+
+ifEvenCustom2 func = (\ x -> func x)
+binaryPartialApplication func  = (\ x -> func x) 
+
+-- function applies the argument, then the 2nd fxn created accepts the 2nd argument
