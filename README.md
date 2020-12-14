@@ -48,3 +48,22 @@ ifEvenDouble = ifEven (\x -> x * 2 )
 ```
 
 
+### lists: 
+
+* "h" is a list of single characters in haskell, 'h' is a single list
+```
+['h'] == "h"
+```
+
+* basically you can cons an element of type T, with a list that contains elements of type T
+
+* cons is not the same as combining two lists which is done using the ```++``` operator.
+
+* "Haskell uses a special form of evaluation called lazy evaluation. In lazy evaluation, no code is evaluated until it’s needed. In the case of longList, none of the values in the list were needed for computation."
+
+* biggest disadvantage of lazy evaluation is that it’s much harder to *reason* about the code’s performance
+
+* implementing Repeat, which takes a list and repeats the list indefinitely
+```
+myRepeat list = cycle [list]
+```

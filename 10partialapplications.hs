@@ -135,3 +135,6 @@ ifEvenCustom2 func = (\ x -> func x)
 binaryPartialApplication func  = (\ x -> func x) 
 
 -- function applies the argument, then the 2nd fxn created accepts the 2nd argument
+
+
+*
