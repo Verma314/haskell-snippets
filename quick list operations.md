@@ -39,8 +39,13 @@ test9 = drop 5 [1,2,3,4,5,6,7,8,9]
 ```
 take  10 (cycle [1,2,3])
 ```
+9. Select elements between ```start``` to ```end``` from a list
+```
+subseq start end list =  drop start (take end list) 
+```
 
 * more info on
 ```
 look up package: Data.List
 ```
+

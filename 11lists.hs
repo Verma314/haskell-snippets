@@ -72,7 +72,22 @@ myRepeat list = cycle [list]
 
 ---------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------
+ 
+-- Exercise 6.2 Will Kurt: 
+-- implement a fxn 'subseq' that takes three arguments: a start position, an end position, a list, and return elements between them
+
+subseq start end list =  drop start (take end list) 
 
 
+---------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+ 
+-- Exercise 6.2 Will Kurt: 
+-- Write a function inFirstHalf that returns True if an element is in the first half of a list, and otherwise returns False.
 
+getFirstHalfOfList list = take ( div (length list) 2 ) list
+inFirstHalf element list = elem element (getFirstHalfOfList list)
 
+---------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+ 
