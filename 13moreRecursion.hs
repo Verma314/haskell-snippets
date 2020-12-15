@@ -55,3 +55,19 @@ retakeWhere num list = (head list) : rest
 
 
 -- implement drop using pattern matching and where:
+dropX 0 list = list
+dropX _ [] = []
+dropX num list = dropX (num - 1) rest
+                 where rest = tail list
+                       
+
+------------------------------------------------------------------
+-- implement cycle
+
+myCycle (x:xs) = (x : xs)  ++ myCycle (x:xs)
+
+-- or
+
+myCycle2 list = list ++ myCycle2 (list)
+
+

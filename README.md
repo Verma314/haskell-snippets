@@ -74,4 +74,11 @@ myRepeat list = cycle [list]
 3. List alternate possibilities.
 4. Ensure alternate possibilities move towards the end goal
 
-* Pattern matching can help a lot with recursion
+* Pattern matching can help a lot with recursion.
+
+* Implementing cycle
+```
+> myCycle list = list ++ myCycle (list)
+> take 9 (myCycle [1,2..100])
+[1,2,3,4,5,6,7,8,9]
+```
