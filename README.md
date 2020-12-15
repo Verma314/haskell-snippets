@@ -67,3 +67,11 @@ ifEvenDouble = ifEven (\x -> x * 2 )
 ```
 myRepeat list = cycle [list]
 ```
+
+* Recusion rules (from W. Kurt's book)
+1. Identify the end goals
+2. What happens if the end goals are reached
+3. List alternate possibilities.
+4. Ensure alternate possibilities move towards the end goal
+
+* Pattern matching can help a lot with recursion
