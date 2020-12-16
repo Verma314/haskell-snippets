@@ -71,3 +71,14 @@ myCycle (x:xs) = (x : xs)  ++ myCycle (x:xs)
 myCycle2 list = list ++ myCycle2 (list)
 
 
+-------------------------------------------------------------------
+-------------------------------------------------------------------
+
+-- Implement your own version of reverse, which reverses a list.
+myreverse [] = []
+myreverse list = myreverse ( tail list ) ++ [ head list ]
+
+
+-- fast fibonacci
+fastFib a _ 0 = a 
+fastFib a b counter = fastFib (a+b) a (counter - 1)
