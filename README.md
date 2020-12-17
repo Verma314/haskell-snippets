@@ -76,9 +76,28 @@ myRepeat list = cycle [list]
 
 * Pattern matching can help a lot with recursion.
 
-* Implementing cycle
+* Implementing cycle -- beautiful
 ```
 > myCycle list = list ++ myCycle (list)
 > take 9 (myCycle [1,2..100])
 [1,2,3,4,5,6,7,8,9]
+```
+
+* Use foldl (reduce) to reverse a list
+```
+rcons x y = y:x
+myreverse2 list = foldl rcons [] list
+```
+
+* implement foldl (tail recursive)
+```
+reduce_left op init [] = init
+reduce_left op init (x:xs) = reduce_left op (op init x) xs
+```
+
+* implement foldr (stack is created
+```
+reduce_right op init [] = init
+reduce_right op init (x:xs) = op x (reduce_right op init xs)
+
 ```
