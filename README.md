@@ -101,3 +101,18 @@ reduce_right op init [] = init
 reduce_right op init (x:xs) = op x (reduce_right op init xs)
 
 ```
+
+## OOP using FP
+* OOP "All objects can be viewed as a collection of attributes that you send messages to"
+
+* Objects are constructed using:
+```
+myObject (prop1,prop2,prop2) = \message -> message (prop1,prop2,prop3)
+```
+These functions basically let us create a function -- which returns a function that is "blank" i.e. waiting for a function to be passed to it. 
+
+Basically it is an "object" which lets us pass a "message" to it.
+Or, it traps the arguments -- and we can pass any function (to be applied to the arguments) later.
+Or, "objects" here are just data members which have this extra functionality to accept a message (ie a function).
+
+* In Haskell, new "objects" are created by modifying copies of old, existing ones.
