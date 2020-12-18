@@ -120,3 +120,5 @@ Or, "objects" here are just data members which have this extra functionality to 
 ### Types
 
 * "Haskell uses type inference to automatically determine the types of all values at compile time based on the way they’re used."
+
+* "Int" is a type which represents how machines store numbers. "Integer" is a more true representation of the mathematical integer.
