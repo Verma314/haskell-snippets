@@ -116,3 +116,7 @@ Or, it traps the arguments -- and we can pass any function (to be applied to the
 Or, "objects" here are just data members which have this extra functionality to accept a message (ie a function).
 
 * In Haskell, new "objects" are created by modifying copies of old, existing ones.
+
+### Types
+
+* "Haskell uses type inference to automatically determine the types of all values at compile time based on the way they’re used."
