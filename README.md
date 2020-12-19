@@ -122,3 +122,25 @@ Or, "objects" here are just data members which have this extra functionality to 
 * "Haskell uses type inference to automatically determine the types of all values at compile time based on the way they’re used."
 
 * "Int" is a type which represents how machines store numbers. "Integer" is a more true representation of the mathematical integer.
+
+* A list of type [Char] is a string (or a list of characters) of *arbitrary* length. A tuple of type (Char) is a tuple with exactly one element -- fixed length.
+
+* To convert from an Integral type to a fractional type:
+```
+half :: Int -> Double
+half x = (fromIntegral x) / 2
+```
+* To make sure you get returned an integral type:
+```
+5 `div` 2
+```
+* Use ```show``` and ```read``` to convert to and from a string.
+* Although when doing a read you need to specify the return type
+```
+read "6" :: Int
+```
+* Type Variable: a lowercase letter in a type signature indicates that any type can be used in that place. 
+```
+simple :: a -> a
+simple x = x
+```
