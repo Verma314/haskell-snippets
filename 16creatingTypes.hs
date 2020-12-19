@@ -119,7 +119,7 @@ showName (Name firstName lastName) = firstName ++ " " ++ lastName
 showName (NameWithMiddle firstName middleName lastName) = firstName ++ " " ++ middleName ++ " " ++ lastName
 
 
-name :: Name ; name = Name "Aditya" "Verma"
+myname :: Name ; myname = Name "Aditya" "Verma"
 
 
 name2 :: Name ; name2 = NameWithMiddle  "Aditya" "Singh" "Verma"
@@ -128,6 +128,37 @@ name2 :: Name ; name2 = NameWithMiddle  "Aditya" "Singh" "Verma"
 ------------------------------------------------------------------
 -- Example: Modelling a paitient ---------------------------------
 
+data Patient = Patient Name Sex Int Int Int BloodType
 
+johnDoe :: Patient; 
+johnDoe = Patient (Name "John" "Doe") Male 30 74 200 (BloodType AB Pos)
 
+-- to create a Patient using the above method is certainly quite tedious
+-- and would get more tedious if we use 
+
+-- Alternatively,
+-- we can create a new data type using the Record syntax
+
+data PaitientV2 = PaitientV2 { name :: Name, 
+                                sex :: Sex,
+                                age :: Int,
+                                height :: Int,
+                                weight :: Int,
+                                bloodType :: BloodType}
+
+-- now creating PaitientV2s is super easy as we no longer need to set the fields by order,
+-- we can do it by name
+
+jackie :: PaitientV2
+jackie = PaitientV2 { name = Name "Jackie" "Smith",
+                      sex = Female,
+                      age = 42,
+                      weight = 60,
+                      height = 170,
+                      bloodType = BloodType AB Pos}
+
+-- getters for each field get created automatically
+test0 = age jackie
+test1 = showBloodType (bloodType jackie )
+test2 = showName (name jackie )
 

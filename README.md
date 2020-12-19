@@ -165,4 +165,20 @@ showABO value = case value of
                     A -> "A"
                     B -> "B"
                     O -> "O"
+-- other examples:
+
+type Age = Int
+type FirstName = String
+
+data Patient = Patient FirstName Age Int
+
+-- or:
+
+data Name =  Name FirstName LastName
+           | NameWithMiddle FirstName MiddleName LastName
+
+data Sex = Male | Female
+data PaitientV2 = PaitientV2 { name :: Name, 
+                                sex :: Sex,
+                                age :: Int}
 ```
