@@ -144,3 +144,6 @@ read "6" :: Int
 simple :: a -> a
 simple x = x
 ```
+
+### Creating types
+
