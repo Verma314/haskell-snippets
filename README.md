@@ -147,10 +147,22 @@ simple x = x
 
 ### Creating types
 
-* We can create new type synonyms by using the ```type``` keyword. Example
+* We can create a type **synonyms** by using the ```type``` keyword. Example
 ```
 type FirstName = String
 type SecondName = String
 -- or 
 type PersonName = (FirstName, SecondName)
+```
+* Creating a **new** type can be used by using the ```data``` keyword. Example
+```
+data ABOType = A | B | AB | O
+
+
+showABO :: ABOType -> String
+showABO value = case value of 
+                    AB -> "AB"
+                    A -> "A"
+                    B -> "B"
+                    O -> "O"
 ```

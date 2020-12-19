@@ -43,4 +43,91 @@ personInfoAlternate person age height = personInfo (getFirstName person) (snd pe
 
 ------------------------------------------------------------------
 ------------------------------------------------------------------
------- --- --- --- --- Creating new types  --- --- --- --- --- --- 
+------ --- --- --- --- Creating new types  --- --- --- --- --- ---
+
+-- type constructor: Sex
+data Sex = Male | Female
+-- the data keyword tells haskell that we are creating a new type
+-- the Sex type can be either an instance of Male or Female 
+-- Male and Female are data constructors
+
+-- bool is defined like:
+-- data Bool = True | False
+
+sexInitial :: Sex -> Char
+sexInitial Male = 'M'
+sexInitial Female = 'F'
+
+------------------------------------------------------------------
+-- Modelling blood group -----------------------------------------
+
+data RhType = Pos | Neg
+data ABOType = A | B | AB | O
+
+
+
+data BloodType = BloodType ABOType RhType 
+-- type^constructor   ^ data constructor
+
+-- a BloodType is an RhType and ABOType
+
+paitient1BT :: BloodType ; 
+paitient1BT = BloodType A Pos
+
+paitient2BT :: BloodType ; 
+paitient2BT = BloodType AB Neg
+
+paitient3BT :: BloodType ; 
+paitient3BT = BloodType AB Pos
+
+-- lets try to print this type out
+showRh :: RhType -> String
+showRh Pos = "+"
+showRh Neg = "-"
+
+showABO :: ABOType -> String
+showABO value = case value of 
+                    AB -> "AB"
+                    A -> "A"
+                    B -> "B"
+                    O -> "O"
+
+showBloodType :: BloodType -> String
+showBloodType (BloodType aboType rhType) = (showABO aboType)  ++ " " ++ (showRh rhType) 
+-- ^ pattern matching used
+
+
+-- which blood group can donate to which other blood group:
+canDonateTo :: BloodType -> BloodType -> Bool
+canDonateTo (BloodType O _) _ = True                      
+canDonateTo _ (BloodType AB _) = True                     
+canDonateTo (BloodType A _) (BloodType A _) = True
+canDonateTo (BloodType B _) (BloodType B _) = True
+canDonateTo _ _ = False 
+
+
+------------------------------------------------------------------
+-- Modelling Name type  ------------------------------------------
+
+type MiddleName = String
+
+data Name =  Name FirstName LastName
+           | NameWithMiddle FirstName MiddleName LastName
+
+showName :: Name -> String
+showName (Name firstName lastName) = firstName ++ " " ++ lastName           
+showName (NameWithMiddle firstName middleName lastName) = firstName ++ " " ++ middleName ++ " " ++ lastName
+
+
+name :: Name ; name = Name "Aditya" "Verma"
+
+
+name2 :: Name ; name2 = NameWithMiddle  "Aditya" "Singh" "Verma"
+
+
+------------------------------------------------------------------
+-- Example: Modelling a paitient ---------------------------------
+
+
+
+
