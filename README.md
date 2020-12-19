@@ -182,3 +182,25 @@ data PaitientV2 = PaitientV2 { name :: Name,
                                 sex :: Sex,
                                 age :: Int}
 ```
+
+* These data types created using the record syntax can generate automatic getters and setters for us
+```
+jackie :: PaitientV2
+jackie = PaitientV2 { name = Name "Jackie" "Smith",
+                      sex = Female,
+                      age = 42,
+                      weight = 60,
+                      height = 170,
+                      bloodType = BloodType AB Pos}
+
+-- getters:
+test0 = age jackie
+test1 = showBloodType (bloodType jackie )
+test2 = showName (name jackie )
+
+--setter:
+jackieUpdated = jackie { age = 44 }
+test3 = age jackieUpdated
+test4 = showBloodType ( bloodType jackieUpdated)
+
+```

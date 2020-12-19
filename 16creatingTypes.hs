@@ -162,3 +162,35 @@ test0 = age jackie
 test1 = showBloodType (bloodType jackie )
 test2 = showName (name jackie )
 
+-- we can add records too:
+
+jackieUpdated = jackie { age = 44 }
+test3 = age jackieUpdated
+test4 = showBloodType ( bloodType jackieUpdated)
+
+jackieWithDiffBloodGroup = jackie { bloodType = BloodType O Pos}
+-- can we add totally new types of records to PaitientV2s? Probably we'll have to create a new type for that
+
+-------------------------------------------------------------------------------------------
+
+{-
+Write a function similar to canDonateTo that takes two patients as arguments rather than two BloodTypes.
+-}
+
+
+canDonateToV2 :: PaitientV2 -> PaitientV2 -> Bool
+canDonateToV2 patient1 patient2 = canDonateTo (bloodType patient1) (bloodType patient2)
+
+test5 = canDonateToV2 jackie jackieWithDiffBloodGroup  -- false
+test6 = canDonateToV2 jackieWithDiffBloodGroup jackie -- true
+
+
+{-
+Implement a patientSummary function that uses your final Patient type. patient-Summary
+-}
+
+patientSummary :: PaitientV2 -> String
+patientSummary patient = (showName (name patient)) ++ " \n " ++
+                          (showBloodType (bloodType patient))  ++ " \n " ++ 
+                            (show (sexInitial (sex patient))) ++ " .. etc :P"
+
