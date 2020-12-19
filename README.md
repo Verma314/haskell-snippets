@@ -147,3 +147,10 @@ simple x = x
 
 ### Creating types
 
+* We can create new type synonyms by using the ```type``` keyword. Example
+```
+type FirstName = String
+type SecondName = String
+-- or 
+type PersonName = (FirstName, SecondName)
+```

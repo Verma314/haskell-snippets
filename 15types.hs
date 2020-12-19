@@ -92,4 +92,6 @@ myTail :: [a] -> [a]
 myTail [] = []
 myTail list = (tail list)
 
-
+myHead :: [a] -> b 
+myHead [] = []
+myHead list = (head list)
