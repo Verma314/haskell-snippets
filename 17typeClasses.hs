@@ -136,3 +136,20 @@ data MyRandomType = MyRandomType ChildTypeRandom  deriving (Show)
 z = MyRandomType RandomOne
 --- MyRandomType RandomOne
 
+-- 13.2
+-- Soln: for inc created manually, if you give it the maxBound :: Int, it returns some value,
+-- But succ that is implemented by Num etc, gives us an error
+
+{-
+Write the following function that works 
+just like succ on Bounded types but can 
+be called an unlimited number of times without error. 
+
+The function will work like inc in the preceding example 
+but works on a wider range of types, 
+including types that aren’t members of Num:
+-}
+
+cycleSucc :: (Bounded a, Enum a, Eq a) => a -> a 
+cycleSucc n = n -- ????
+              
