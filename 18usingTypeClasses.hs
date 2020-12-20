@@ -100,6 +100,9 @@ instance Ord SixSidedDie where
                     else if ( toNumber v1 > toNumber v2 ) then GT 
                     else LT
 
+
+-- we can also make SixSidedDie a part of Enum (ie make SixSidedDie an instance of TypeClass Enum)
+-- and then use the enum functions fromEnum to manually order Eq and Ord
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 

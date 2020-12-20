@@ -262,6 +262,13 @@ Prelude> minBound :: Int
 ```
 :doc Int
 ```
+
+* Type constructor and data constructor
+```
+data BloodType = BloodType ABOType RhType 
+-- type^constructor   ^ data constructor
+```
+
 ### Using these Type Classes 
 
 * Generally when we create our own type. We can include it as a member of one of these Type Classes by implementing the functions
@@ -315,6 +322,40 @@ instance Ord SixSidedDie where
                     else if ( toNumber v1 > toNumber v2 ) then GT 
                     else LT
 ```
+
+* We can also make ```SixSidedDie``` a part of Enum (ie make SixSidedDie an instance of TypeClass Enum) and then use the enum functions fromEnum to manually order Eq and Ord
+```
+instance Enum SixSidedDie where
+   toEnum 0 = S1
+   toEnum 1 = S2
+   toEnum 2 = S3
+   toEnum 3 = S4
+   toEnum 4 = S5
+   toEnum 5 = S6
+   toEnum _ = error "No such value"
+
+   fromEnum S1 = 0
+   fromEnum S2 = 1
+   fromEnum S3 = 2
+   fromEnum S4 = 3
+   fromEnum S5 = 4
+   fromEnum S6 = 5
+```
+
+The type of fromEnum is
+```
+> :t fromEnum 
+fromEnum :: Enum a => a -> Int
+```
+that is, it accepts an Enum type and returns an Int. Now SixSidedDie *is* an Enum as well.
+hence we can use:
+```
+> fromEnum S2
+1
+> toEnum 1 :: SixSidedDie
+two
+```
+* You can run  ```:info SixSidedDie``` to check all the type classes that SixSidedDie implements
 
 * Although deriving these Type Classes is often a better idea than implementing everything
 ```
