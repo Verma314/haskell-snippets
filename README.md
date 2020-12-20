@@ -1,6 +1,6 @@
 # haskell-snippets
 
-### One liners 
+## One liners 
 
 * Let and Where are both ways of creating variables. Choosing to use let or where is a matter of style the vast majority of the time in Haskell. 
 * Lambdas can also be used to 'implement' variables example:
@@ -117,7 +117,7 @@ Or, "objects" here are just data members which have this extra functionality to 
 
 * In Haskell, new "objects" are created by modifying copies of old, existing ones.
 
-### Types
+## Types
 
 * "Haskell uses type inference to automatically determine the types of all values at compile time based on the way they’re used."
 
@@ -204,7 +204,7 @@ test3 = age jackieUpdated
 test4 = showBloodType ( bloodType jackieUpdated)
 ```
 
-### Type Classes
+## Type Classes
 * "Type classes allow you to group types based on shared behavior"
 * A type class states which functions a type must support. "Type classes require us to think in increasingly more powerful
 forms of abstraction and form the heart of Haskell programming"
@@ -258,3 +258,67 @@ Prelude> minBound :: Int
 ```data MyRandomType = MyRandomType ChildTypeRandom  deriving (Show)```
 * We can also implement our own type classes.
 
+* To get into about any class (type class, or type) use ```:doc <type>``` example:
+```
+:doc Int
+```
+### Using these Type Classes 
+
+* Generally when we create our own type. We can include it as a member of one of these Type Classes by implementing the functions
+specified in the documentation. 
+```
+data SixSidedDie = S1 | S2 | S3 | S4 | S5 | S6
+
+-- to make elements of type SixSidedDie able to print, we need to implment Show (IE implement the method requred by Show to implement)
+instance Show SixSidedDie where
+    show S1 = "one"
+    show S2 = "two"
+    show S3 = "three"
+    show S4 = "four"
+    show S5 = "five"
+    show S6 = "six"
+```
+* to make us able to equate objects of this type, we include it under the Eq type class, and implement the function(s) required
+```
+instance Eq SixSidedDie where
+    (==) v1 v2 = (==) (show v1) (show v2) 
+```
+
+* To make it comparable, we need to implment Ord. We see that Ord requires a minimum implementation of ```compare```
+```
+*Main> :info Ord
+class Eq a => Ord a where
+  compare :: a -> a -> Ordering
+```
+
+The ordering type is defined as:
+```
+*Main> :info Ordering
+data Ordering = LT | EQ | GT   
+```
+
+Let's implement Ord for SixSidedDie
+
+```
+toNumber ::  SixSidedDie -> Int
+toNumber S1  = 1
+toNumber S2  = 2
+toNumber S3  = 3
+toNumber S4  = 4
+toNumber S5  = 5
+toNumber S6  = 6
+
+instance Ord SixSidedDie where
+    compare S6 S6 = EQ 
+    compare S6 _  = GT
+    compare v1 v2 = if ( toNumber v1 == toNumber v2 ) then EQ
+                    else if ( toNumber v1 > toNumber v2 ) then GT 
+                    else LT
+```
+
+* Although deriving these Type Classes is often a better idea than implementing everything
+```
+data SixSidedDieV2 = S01 | S02 | S03 | S04 | S05 | S06 deriving (Show, Enum, Ord, Eq)
+test3 = S01 > S01
+test2 = [S01 .. S06]  
+```
