@@ -11,9 +11,37 @@ names = [   ("Aditya","Verma"),
 sortedNames = sort names
 -- this sorts by the 1st name, what if we want to sort the list by 2nd name?
 
+-- we can try to sort it by 2nd name using:
+{-
+instance Ord Name where
+   compare (f1,l1) (f2,l2) = compare (l1,f1) (l2,f2)
+-}
+-- but this gives an error because Name is (String,String) which implements its own Ord
 
 
 
+-- Alternative:
+data NameV2 = NameV2 (String, String) deriving (Show, Eq)
+-- here using the data constructor makes this new type different 
+
+-- now that we have our custom type we can implement Ord 
+-- (and also utilize the built in compare in String)
+instance Ord NameV2 where
+   compare (NameV2 (f1,l1)) (NameV2 (f2,l2)) = compare (l1,f1) (l2,f2)
+
+-- now when we try to sort a list of NameVC this above Ord implementation will be invoked:
+
+names2 :: [NameV2]
+
+names2 = [NameV2 ("A","Z"), 
+          NameV2 ("Z","A")
+         , NameV2 ("B","M") ]
+
+names2Sorted = sort names2 
+
+
+
+----------------------------------------------------------------------
 {-Note that Enum doesn’t require either Ord or Eq, 
 even though it maps types to Int values (which implement both Ord and Eq). 
 Ignoring the fact that you can easily use deriving for Eq and Ord,
