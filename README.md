@@ -202,5 +202,59 @@ test2 = showName (name jackie )
 jackieUpdated = jackie { age = 44 }
 test3 = age jackieUpdated
 test4 = showBloodType ( bloodType jackieUpdated)
-
 ```
+
+### Type Classes
+* "Type classes allow you to group types based on shared behavior"
+* A type class states which functions a type must support. "Type classes require us to think in increasingly more powerful
+forms of abstraction and form the heart of Haskell programming"
+
+* A type ```a``` can belong to a type class (say) ```Num```, which generalizes the idea of a "number". There can be various other types that belong to ```Num```.  And all of them must implement certain functions. This info about a type class can be obtained via:
+```
+:info Num 
+```
+The definition is a list of functions that all members of the class must implement.
+
+* Example:
+```
+-- here, "a" is a type of class Num
+-- and, this fxn accepts two Nums of type "a", and returns a type "a" 
+addThenMultiply :: Num a => a -> a -> a
+addThenMultiply num1 num2 = ( num1 + num2 ) * 2
+```
+
+This function would work on Int, Double etc. Or on any other type that  a programmer has created,
+and has implemented the Num type class.
+
+### Defining a type class
+
+* Can define a new type like:
+```
+class Describable a where
+    describe :: a -> String
+```
+Now all types that choose to be a Describable have to implement this describe function.
+
+* If we use :info <type>, example: :info Int, we get all the type classes for which Int is a member of.
+
+* Example of an existing type class Bounded:
+```
+class Bounded a where
+  minBound :: a
+  maxBound :: a
+```
+* Here minBound and maxBound are not functions, but just fixed values:
+```
+Prelude> minBound :: Int
+-9223372036854775808
+```
+
+#### In summary:
+
+* Any type can belong to a generalized Type Class. Like ```:info Int``` shows the type classes that Int belongs to.
+* We can define **new** functions using the Type Classes in our function type signature, instead of individual types, for more generalization.
+* If a type belongs to a particular type class, it must implement the functions specified by the type class...
+*  ... Unless it derives them from the type class. Example: Haskell automatically implemented the type class Show for MyRandomType type here:
+```data MyRandomType = MyRandomType ChildTypeRandom  deriving (Show)```
+* We can also implement our own type classes.
+
