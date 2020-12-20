@@ -363,3 +363,21 @@ data SixSidedDieV2 = S01 | S02 | S03 | S04 | S05 | S06 deriving (Show, Enum, Ord
 test3 = S01 > S01
 test2 = [S01 .. S06]  
 ```
+
+
+* To DEFINE your own type class, which has requirement for one method implementation
+
+```
+Die a where
+    printSide :: a -> String
+```
+
+
+* To DEFINE your own type class, which has some super classes:
+```
+class (Eq a, Enum a) => Die a where
+    printSide :: a -> String
+```
+
+Make sure that all instances of Die then are also implementing Eq and Enum. (are also Enum and Eq themselves.)
+
