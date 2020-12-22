@@ -381,3 +381,14 @@ class (Eq a, Enum a) => Die a where
 
 Make sure that all instances of Die then are also implementing Eq and Enum. (are also Enum and Eq themselves.)
 
+* You can add type signatures for partial applications too.
+For example in Capstone02Types...hs, there is function
+```
+rottN :: (Enum a, Bounded a) => Int -> a -> a
+rottN int char = .... etc etc...
+
+-- partial application, note type signature. It is bascically like the one from the above function except the Int!
+rot13x :: (Enum a,Bounded a) => a -> a
+rot13x = rottN 26                    
+```
+
