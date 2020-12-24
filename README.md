@@ -252,7 +252,7 @@ Prelude> minBound :: Int
 #### In summary:
 
 * Any type can belong to a generalized Type Class. Like ```:info Int``` shows the type classes that Int belongs to.
-* We can define **new** functions using the Type Classes in our function type signature, instead of individual types, for more generalization.
+* We can define **new** functions using the Type Classes instead of Types in our function type signature, instead of individual types, for more generalization.
 * If a type belongs to a particular type class, it must implement the functions specified by the type class...
 *  ... Unless it derives them from the type class. Example: Haskell automatically implemented the type class Show for MyRandomType type here:
 ```data MyRandomType = MyRandomType ChildTypeRandom  deriving (Show)```
@@ -269,7 +269,7 @@ data BloodType = BloodType ABOType RhType
 -- type^constructor   ^ data constructor
 ```
 
-### Using these Type Classes 
+### Important + Interesting: Using these Type Classes 
 
 * Generally when we create our own type. We can include it as a member of one of these Type Classes by implementing the functions
 specified in the documentation. 
@@ -379,7 +379,7 @@ class (Eq a, Enum a) => Die a where
     printSide :: a -> String
 ```
 
-Make sure that all instances of Die then are also implementing Eq and Enum. (are also Enum and Eq themselves.)
+Make sure that all instances of Die (ie who ever choses to be a type of Die ) then are also implementing Eq and Enum. (are also Enum and Eq themselves.)
 
 * You can add type signatures for partial applications too.
 For example in Capstone02Types...hs, there is function

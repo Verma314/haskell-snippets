@@ -58,3 +58,18 @@ rot13x = rottN 26
 encryptString :: String -> String
 encryptString toEncrypt = map rot13x toEncrypt
 -- this only works with lowercase :p
+
+
+----------------------------------------------------------------------
+----------------------------XOR---------------------------------------
+
+xorBool :: Bool -> Bool -> Bool
+xorBool value1 value2 = if ( value1 == value2 ) then False
+                        else True
+
+xorPair :: (Bool,Bool) -> Bool
+xorPair (v1,v2) = xorBool v1 v2      
+
+
+xor :: [Bool] -> [Bool] -> [Bool]
+xor list1 list2 = map xorPair ( zip list1 list2)
