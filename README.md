@@ -392,3 +392,48 @@ rot13x :: (Enum a,Bounded a) => a -> a
 rot13x = rottN 26                    
 ```
 
+## Notes on 'Programming in Types' 
+#### from Get Programming in Haskell by Will Kurt.
+
+* A type signature is a description of a transformation. Types in Haskell allow us to view programs as a series of transformations. 
+
+* By thinking about type transformations we can design an overall program in a similar way to designing a function. 
+
+* In Haskell, we shall thing in and use types extensively. i.e Types first and using functions to flesh out the details.
+
+
+* Types that we have seen so far are algebraic data types. That is, types created by 'and'ing two data types, or 'or'ing them.
+
+Example: a Name type is a String and another String.
+A Bool type is either ```True``` data constructor or ```False``` data constructor.
+
+
+and types == product types
+or types == sum types
+
+* Nearly all programming languages support product types. Example: Structs in C, classes in Java, etc.
+
+* By making new types only by combining existing types leads to a 'top-down' design. "We can only expand to an idea by adding to it"
+"This is the basis for designing software in terms of class hierarchies."
+
+* Lets say we want an abstraction for all the items being sold at a book store.
+That is, all items will be represented by a certain class ```StoreItem```.
+
+How do we do this if the items available in the store? i.e make this class searchable.
+
+
+For example: if the store sells vinyls and books. Both have very different properties and can not be abstracted out easily. 
+
+"The big problem is that you want a single type that represents both vinyl records and books so you can make a searchable inventory. Because you can compose types only by and, you need to develop an abstraction that describes everything that records and books have in common. You’ll then implement only the differences in the separate classes. This is the fundamental idea behind inheritance"
+
+Now we implement the code using a common class say ```StoreItem```. And implement product specific logic (Books and Vinyls) using conditionals.
+
+What do we do if we want to later add a third type of item to our inventory?
+
+What if the third type of item does not have attributes common with Book and Vinyl.
+
+* Therefore, the design can get really complicated with using only ```product types``` even for simple cases.   
+
+
+
+
