@@ -108,12 +108,9 @@ bitsToChar bitList =  toEnum(valueToAdd + fromEnum(bitsToChar(xs)))
                                          else 0    
 
 ---
-
 -- to encrypt:
 
 messageToBits message  = map charToBits message
-
-
 bitsToMessage bitListofList = map bitsToChar bitListofList
 
 -- test
@@ -124,7 +121,6 @@ xorTwoMessages :: String -> String -> [Bits]
 xorTwoMessages message1 message2 = xorTwoBitLists (messageToBits message1) (messageToBits message2)
 
 -- type Bits = [Bool]
-
 xorTwoBitLists :: [Bits] -> [Bits] -> [Bits]
 xorTwoBitLists bits1 bits2 =  map xoringFunction (zip bits1 bits2)
                               where xoringFunction = (\ toXorTup -> xor (fst toXorTup) (snd toXorTup) )
@@ -142,7 +138,6 @@ xorTwoBitLists bits1 bits2 =  map xoringFunction (zip bits1 bits2)
 
 *Main> bitsToMessage (xorTwoMessages "ADI" "ADI")
 "\NUL\NUL\NUL"
-
 
 -}
     
