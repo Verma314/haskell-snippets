@@ -73,3 +73,76 @@ xorPair (v1,v2) = xorBool v1 v2
 
 xor :: [Bool] -> [Bool] -> [Bool]
 xor list1 list2 = map xorPair ( zip list1 list2)
+
+
+----------------------------------------------------------------------
+--------- Representing values as bits --------------------------------
+
+type Bits = [Bool]
+
+intToBits' :: Int -> Bits
+intToBits' 1 = [True]
+intToBits' 0 = [False]
+intToBits' givenInt = value : intToBits' divident
+                where divident = div givenInt 2 
+                      remainder = mod givenInt 2 
+                      value = if ( remainder == 1 ) then True
+                              else False  
+
+maxBits :: Int
+maxBits = length (intToBits' maxBound)
+
+intToBits :: Int -> Bits
+intToBits givenInt = take paddingNumber (cycle [False]) ++ reversedBits 
+                     where reversedBits = reverse (intToBits' givenInt)
+                           paddingNumber = maxBits - (length reversedBits)
+charToBits :: Char -> Bits
+charToBits char = intToBits (fromEnum char)
+
+
+bitsToChar :: Bits -> Char
+bitsToChar [] = toEnum (0)
+bitsToChar bitList =  toEnum(valueToAdd + fromEnum(bitsToChar(xs)))
+                      where (x:xs) =  bitList
+                            valueToAdd = if x then 2 ^ ( length bitList - 1) 
+                                         else 0    
+
+---
+
+-- to encrypt:
+
+messageToBits message  = map charToBits message
+
+
+bitsToMessage bitListofList = map bitsToChar bitListofList
+
+-- test
+test1 = bitsToMessage ((messageToBits "a"))
+test2 = bitsToMessage ((messageToBits "aditya"))
+
+xorTwoMessages :: String -> String -> [Bits]
+xorTwoMessages message1 message2 = xorTwoBitLists (messageToBits message1) (messageToBits message2)
+
+-- type Bits = [Bool]
+
+xorTwoBitLists :: [Bits] -> [Bits] -> [Bits]
+xorTwoBitLists bits1 bits2 =  map xoringFunction (zip bits1 bits2)
+                              where xoringFunction = (\ toXorTup -> xor (fst toXorTup) (snd toXorTup) )
+
+-- works!
+
+{- testing:
+
+*Main> bitsToMessage (xorTwoMessages "abc" "fsa")
+"\a\DC1\STX"
+
+
+*Main> bitsToMessage (xorTwoMessages "abc" "\a\DC1\STX")
+"fsa"
+
+*Main> bitsToMessage (xorTwoMessages "ADI" "ADI")
+"\NUL\NUL\NUL"
+
+
+-}
+    
