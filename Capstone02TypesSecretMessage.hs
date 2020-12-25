@@ -141,3 +141,5 @@ xorTwoBitLists bits1 bits2 =  map xoringFunction (zip bits1 bits2)
 
 -}
     
+
+-- todo: One time pad

@@ -393,7 +393,7 @@ rot13x = rottN 26
 ```
 
 ## Notes on 'Programming in Types' 
-#### from Get Programming in Haskell by Will Kurt.
+#### (from Get Programming in Haskell by Will Kurt.)
 
 * A type signature is a description of a transformation. Types in Haskell allow us to view programs as a series of transformations. 
 
@@ -436,4 +436,16 @@ What if the third type of item does not have attributes common with Book and Vin
 
 
 
+## Sum Types | Or Types
+
+* They let you combine two types with an  ```or```
+
+* Examples from the book:
+```
+A die is either a 6-sided die or a 20-sided die or ....
+A paper is authored by either a person (String) or a group of people ([String]).
+```
+
+* data Bool = False | True
+is an example of an ```or``` type.
 
