@@ -449,3 +449,29 @@ A paper is authored by either a person (String) or a group of people ([String]).
 * data Bool = False | True
 is an example of an ```or``` type.
 
+## Composability
+
+* The Sum Types discussed above are kind of unique to Haskell (or FP?) and lets us use design patterns not available in traditional programming languages.
+
+* Composability is another divergence from regular software design.
+
+* Composability means that you create something new by combining two like things."
+Like, concat two strings, two lists to get a new list, two documents.
+Each of these methods of combining types has a unique operator or function.
+
+Example
+```
+example = "What" ++ " Are " ++ " the " ++ " alternatives" 
+```
+
+* We can combine functions by using a period ```.```
+Example:
+```
+myLast :: [a] -> a
+myLast = head . reverse
+```
+
+### Combining like types: Semigroups
+:
+`
+
