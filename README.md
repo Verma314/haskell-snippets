@@ -471,7 +471,62 @@ myLast :: [a] -> a
 myLast = head . reverse
 ```
 
-### Combining like types: Semigroups
-:
-`
+### Combining like types: Semigroups 
 
+* Any type can be made a type of the Semigroup type class.
+Example
+```
+instance Semigroup Integer where          
+   (<>) x y = x + y                       
+```
+
+### Monoids
+
+* Monoids are semi groups with one more constraint: a type implmenting a monoid type class must also contain the identity element.
+
+* Even though it seems like semigroup should be a superclass of monoid in Haskell. But no, Monoid is not implemented as a subclass of Semigroup.
+
+* Definition of Monoid:
+```
+class Monoid a where
+  mempty :: a
+  mappend :: a -> a -> a
+  mconcat :: [a] -> a
+```
+
+* the ```mempty``` is the identiy element. ```mappend``` is used in monoid as the operator instead of ```<>``` 
+
+`
+* the ```[]``` in Haskell, also implements monoid. So:
+
+```
+GHCi> [1,2,3] ++ []
+[1,2,3]
+
+GHCi> [1,2,3] <> []
+[1,2,3]
+
+GHCi> [1,2,3] `mappend` mempty
+[1,2,3]
+```
+
+* To make a type an instance of the Monoid type class, we just need to implement
+```mempty``` and ```mappend```. Haskell automatically generates ```mconcat``` for us.
+
+Type signature for ```mconcat``` is:
+```
+mconcat :: Monoid a => [a] -> a
+```
+
+
+* Haskell is able to infer the definition of ```mconcat``` using:
+```
+mconcat = foldr mappend mempty
+```
+Why not foldl?
+
+* 
+From the book
+"Note that the reason mconcat uses foldr instead of foldl is due to the way that foldr can work with infinite lists, whereas foldl will force the evaluation."
+
+* 
