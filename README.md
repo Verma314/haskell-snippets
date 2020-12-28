@@ -7,7 +7,7 @@
 ```
 myFunction x y = (\ x y -> if x > y then x + y else x) (x ^ 2) (y ^ 2)
 ```
-* "We are passing in a function and returning a lambda function. The function func that we passed in is captured inside the lambda function. When we capture a value inside a lambda function, this is referred to as a closure (on the function func). (on the u" (From Will Kurt's Get Programming in Haskell book)
+* "We are passing in a function and returning a lambda function. The function func that we passed in is captured inside the lambda function. When we capture a value inside a lambda function, this is referred to as a closure (on the function func). (From Will Kurt's Get Programming in Haskell book)
 ```
 ifEvenApplyFuncClosure func = (\ x -> if even x then func x else x)
 ```
@@ -557,7 +557,7 @@ data Box a = Box a deriving Show
 ```
 data TripleV2 = TripleV2 String String String deriving Show
 ```
-Now these parameterized types *are* types, which basically allow us to include arbitrary data types and nothing else,
+Now these parameterized types *are* types, that basically allow us to include arbitrary data types and nothing else,
 ```
 data Triple a = Triple a a a deriving Show
 ```
@@ -587,7 +587,7 @@ transform (Triple x y z) func = Triple (func x) (func y) (func z)
 This function is different from map functions for Lists, because map lets us change the type.
 Transforming (as defined above) does not.
 
-* To implement our own List container
+* To implement our own List container (very interesting + important)
 ```
 data MyList a = Empty | Cons a (MyList a) deriving Show
 
@@ -604,3 +604,48 @@ myMap :: ( a -> b ) -> MyList a -> MyList b
 myMap func (Cons ele rest) = Cons (func ele) (myMap func rest)
 myMap func _ = Empty
 ```
+
+* A tuple in Haskell is a type which is multi-parameterized. You can define your own 2-tuple like this:
+```
+data MyTuple a b =  None | Tup a b deriving (Show)
+
+type IntStringTups  = MyTuple Int String
+
+rollName1 :: IntStringTups;
+rollName1 = Tup 1 "Aditya"
+rollName2 = Tup 2 "Afdsa"
+```
+
+
+## Kinds
+
+* In Haskell, just like Data and Functions have their type. Types have their own type as well.
+The type of a type is called a Kind.
+
+* **Kind of Type** indicates the number of types that the type takes.  
+
+* Types that take no parameters have a kind ```*```. Example,
+```
+*Main> :kind Int
+Int :: *
+```
+
+* Types that take one parameter have a type ```* -> *```
+```
+*Main> :kind Triple
+Triple :: * -> *
+```
+
+Kind of a two-tuple
+```
+*Main> :kind (,)
+(,) :: * -> * -> *
+```
+
+* Kinds are of importance when we study monads and functors.
+
+
+
+## Data.Map
+
+* This is another parameterized type in Haskell.

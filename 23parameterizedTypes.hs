@@ -107,3 +107,26 @@ myNewList = myMap (\x -> x * 10) testList
 myNewTestList = myMap customFunc myNewList
 customFunc x = x * 11
 
+
+-- multi parameterized types, 
+-- we can construct types that can include multiple types.
+-- a tuple is an example of one such type
+
+data MyTuple a b =  None | Tup a b deriving (Show)
+
+type IntStringTups  = MyTuple Int String
+
+rollName1 :: IntStringTups;
+rollName1 = Tup 1 "Aditya"
+rollName2 = Tup 2 "Afdsa"
+rollName3 = Tup 3 "Naeajfsa"
+rollName4 = Tup 4 "Palrewfksa"
+
+type RollNumberNames = [IntStringTups]
+
+class10A :: RollNumberNames
+class10A = [rollName1,rollName2,rollName3,rollName4]
+
+-- similarly multiple kinds of types can be constructed.
+
+
