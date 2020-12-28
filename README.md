@@ -525,8 +525,82 @@ mconcat = foldr mappend mempty
 ```
 Why not foldl?
 
-* 
-From the book
+*  From the book
 "Note that the reason mconcat uses foldr instead of foldl is due to the way that foldr can work with infinite lists, whereas foldl will force the evaluation."
 
-* 
+
+
+## Parameterized Types
+
+* Types can take arguments -- but by using type variables in their definitions. "Their arguments are other types." 
+
+* Quote from GPWH Book "Parameterized types allow us to define generic data structures that work with a wide range of existing data."
+
+* Slightly similar to generics in C# or Java. *Parameterized types let us create "containers" that can hold other types.* Like,
+```
+List<String> 
+```
+or,
+```
+Pair<Integer,String>
+```
+
+*  We use these generic types to constraint the type of values that the container can take.
+
+* Basic example
+```
+-- a box that contains other types
+data Box a = Box a deriving Show
+```
+
+* Previously, to create a new type we would use:
+```
+data TripleV2 = TripleV2 String String String deriving Show
+```
+Now these parameterized types *are* types, which basically allow us to include arbitrary data types and nothing else,
+```
+data Triple a = Triple a a a deriving Show
+```
+These are like generic types.
+
+* Examples:
+
+```
+type Point3D = Triple Double 
+
+origin :: Point3D
+origin = Triple 0.0 0.0 0.0
+
+
+-- more types:
+type FullName = Triple String
+
+aditya :: FullName
+aditya = Triple "A" "S" "Verma"
+```
+
+* A function to transform a Triple a
+```
+transform ::  Triple a -> ( a -> a)  -> Triple a
+transform (Triple x y z) func = Triple (func x) (func y) (func z)
+```
+This function is different from map functions for Lists, because map lets us change the type.
+Transforming (as defined above) does not.
+
+* To implement our own List container
+```
+data MyList a = Empty | Cons a (MyList a) deriving Show
+
+-- let us create new List (which contains Integers) type from our original parameterized type
+type IntList = MyList Int
+
+testList :: IntList
+testList = Cons 1 ( Cons 2 (Cons 3 Empty ))
+```
+
+* To implement a map for your custom list ```MyList```
+```
+myMap :: ( a -> b ) -> MyList a -> MyList b
+myMap func (Cons ele rest) = Cons (func ele) (myMap func rest)
+myMap func _ = Empty
+```
