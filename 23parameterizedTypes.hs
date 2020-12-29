@@ -127,6 +127,6 @@ type RollNumberNames = [IntStringTups]
 class10A :: RollNumberNames
 class10A = [rollName1,rollName2,rollName3,rollName4]
 
--- similarly multiple kinds of types can be constructed.
+-- similarly multiple varieties of types can be constructed.
 
 

@@ -530,7 +530,7 @@ Why not foldl?
 
 
 
-## Parameterized Types
+## Parameterized Types (very cool)
 
 * Types can take arguments -- but by using type variables in their definitions. "Their arguments are other types." 
 
@@ -557,7 +557,7 @@ data Box a = Box a deriving Show
 ```
 data TripleV2 = TripleV2 String String String deriving Show
 ```
-Now these parameterized types *are* types, that basically allow us to include arbitrary data types and nothing else,
+See, now these parameterized types *are* types, that basically allow us to include arbitrary data types (while creating new data types) and nothing else,
 ```
 data Triple a = Triple a a a deriving Show
 ```
@@ -591,10 +591,10 @@ Transforming (as defined above) does not.
 ```
 data MyList a = Empty | Cons a (MyList a) deriving Show
 
--- let us create new List (which contains Integers) type from our original parameterized type
-type IntList = MyList Int
+-- let us create new implementation of List (which contains Integers) type from our original parameterized type
 
-testList :: IntList
+type IntList = MyList Int
+ testList :: IntList
 testList = Cons 1 ( Cons 2 (Cons 3 Empty ))
 ```
 
@@ -649,3 +649,54 @@ Kind of a two-tuple
 ## Data.Map
 
 * This is another parameterized type in Haskell.
+
+* Module which has an implementation for Map
+```
+import qualified Data.Map as Map
+```
+* The function that helps us create a Map:
+```
+*Main> :t Map.fromList
+Map.fromList :: Ord k => [(k, a)] -> Map.Map k a
+```
+We can see from the type signature that it takes a list of tuples,
+the first element of the tuple must belong to an 'Orderable' type, (ie must inherit/implement Ord).
+
+(This is because internally the Map is implmented via a binary tree. This is different from a hash map which is implemented using a hash function)
+
+The ```fromList``` function then returns us a ```Map k a```
+
+* So to create a Map use ```Map.fromList```
+```
+pairs = zip list1 list2
+ourMap = Map.fromList pairs
+```
+The data ```ourMap``` will return us our Map. Example
+```
+*Main> ourMap 
+fromList [(2,Heart),(7,Heart),(13,Brain),(14,Spleen),(21,Spleen),(24,Kidney)]
+*Main> 
+```
+
+* How do we lookup values from the map? Via ```Map.lookup```. An example:
+```
+*Main> Map.lookup 24 organMap 
+Just Kidney
+```
+In general:
+```
+*Main> value = Map.lookup <key> <mapName> 
+```
+
+* When we print ```value```, we get
+```
+*Main> value
+Just Kidney
+```
+
+Why the ```Just```? Let us check the type of ```value```
+```
+*Main> :t value 
+value :: Maybe Organ
+```
+```Organ``` was the type of our value. 
