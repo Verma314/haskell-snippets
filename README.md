@@ -217,7 +217,7 @@ The definition is a list of functions that all members of the class must impleme
 
 * Example:
 ```
--- here, "a" is a type of class Num
+-- here, ```a``` is a type of class Num
 -- and, this fxn accepts two Nums of type "a", and returns a type "a" 
 addThenMultiply :: Num a => a -> a -> a
 addThenMultiply num1 num2 = ( num1 + num2 ) * 2
@@ -269,7 +269,7 @@ data BloodType = BloodType ABOType RhType
 -- type^constructor   ^ data constructor
 ```
 
-### Important + Interesting: Using these Type Classes 
+### Important + Interesting: Using Type Classes 
 
 * Generally when we create our own type. We can include it as a member of one of these Type Classes by implementing the functions
 specified in the documentation. 
@@ -364,6 +364,7 @@ test3 = S01 > S01
 test2 = [S01 .. S06]  
 ```
 
+## Define your own Type Class
 
 * To DEFINE your own type class, which has requirement for one method implementation
 
@@ -379,7 +380,10 @@ class (Eq a, Enum a) => Die a where
     printSide :: a -> String
 ```
 
-Make sure that all instances of Die (ie who ever choses to be a type of Die ) then are also implementing Eq and Enum. (are also Enum and Eq themselves.)
+Make sure that all instances of Die (ie who ever choses to be a type of Die ) then are also implementing Eq and Enum. (i.e are also Enum and Eq themselves.) 
+
+All instances of Die, (all types that are a Die/all types that implement Die) should also implement ```printSide```
+
 
 * You can add type signatures for partial applications too.
 For example in Capstone02Types...hs, there is function
@@ -393,7 +397,7 @@ rot13x = rottN 26
 ```
 
 ## Notes on 'Programming in Types' 
-#### (from Get Programming in Haskell by Will Kurt.)
+##### (from Get Programming in Haskell by Will Kurt.)
 
 * A type signature is a description of a transformation. Types in Haskell allow us to view programs as a series of transformations. 
 
@@ -700,3 +704,80 @@ Why the ```Just```? Let us check the type of ```value```
 value :: Maybe Organ
 ```
 ```Organ``` was the type of our value. 
+
+
+## Maybe Type: another parameterized type
+
+* Parameterized types (generic types, that let you create new types by "giving them" your chosen type as a parameter) are much more important in Haskell, than generics are in OOP languages.
+
+* Unlike Lists or Maps which represent containers of values of a certain type.
+A Maybe type represents a context for a value.
+
+* Maybe types represent values that might be missing.
+
+Instead of using null, "...the Maybe type allows you to write much safer code. Because of the power of the Maybe type, errors related to null values are systematically removed from Haskell programs."
+
+* Say we quickly create a Map:
+```
+groceries :: Map.Map String Int ;  
+groceries = Map.fromList [("Milk",1),("Candy bars",10), ("Cheese blocks",2)]
+getAMaybe = Map.lookup "Randomdaskda" groceries
+getMilk= Map.lookup "Milk" groceries
+```
+
+On checkin the types on GHCI,
+when we lookup we are returned a Maybe Int both times:
+
+```
+*Main> getAMaybe
+Nothing
+*Main> :t getAMaybe
+getAMaybe :: Maybe Int
+*Main> 
+
+
+*Main> 
+*Main> getMilk 
+Just 1
+*Main> 
+*Main> :t getMilk 
+getMilk :: Maybe Int
+```
+
+* Maybe is a type in a context. The context being that the type might be missing. 
+This parameterized type is not like the others discusses before, they all represent containers.
+
+* Definition of Maybe
+```
+data Maybe a = Nothing | Just a
+```
+Any Maybe ```type``` is either nothing or it is just a value from that ```type```
+
+### Why use Maybe Types?
+
+* When looking up a value from a HashMap, the approach in a lot of programming languages is to return an **error** in case the value in not found.
+
+This can go wrong easily because **where ever** (not just in Maps), a function possibly throws an error for such a scenario, the developer must catch the error and handle the exception, to make sure the program does not crash. These checks need to be placed everywhere. 
+
+Freedom to handle it differently (or use alternate logic) is restricted. 
+
+Example,
+We might have wanted to handle the error differently depending on what value (that was expected) went missing. 
+
+* Returning a ```null``` might lead to even more problems.  Null checks would have to be placed everywhere.
+If a check is missed, they propagate further and cause more issues, that might not have been handled elewhere either. Null pointer exceptions are quite common.
+
+* Why ```Maybe```? When a function returns a Maybe, the calling function can not avoid the fact that the data value is a ```Maybe```. "Maybe makes it impossible to forget that a value might be null."
+
+* Maybe types are returned everywhere where there is a chance that the requested value might not exist.Example, opening files, RESTful API calls requesting a resource, reading from DB etc...
+
+(Credit:examples from W. Kurt's Get Programming in Haskell)
+
+* Let us say you have a list of Maybes, you can use isJust or isNothing to filter our the values from the Nothings
+```
+drawerContents  drop            dropWhile
+*Main> filter Data.Maybe.isJust drawerContents 
+[Just Heart,Just Heart,Just Brain,Just Spleen,Just Spleen,Just Kidney]
+```
+
+*
