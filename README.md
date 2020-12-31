@@ -705,6 +705,36 @@ value :: Maybe Organ
 ```
 ```Organ``` was the type of our value. 
 
+* How to combine two Maps?
+
+```
+m1 = Map.fromList [(1,1),(2,2)]
+m2 = Map.fromList [(3,3),(4,4)]
+
+-- we will write a method that can insert a pair to our map
+insertPair :: Ord k => Map.Map k a -> (k, a) -> Map.Map k a
+insertPair myMap (key, value) = Map.insert key value myMap
+
+-- how to combine:
+m3 = foldl insertPair m1 (Map.toList m2)
+
+-- how to convert insertPair into a lambda function?
+```
+
+* How to combine two lists into a single map?
+```
+mapInitial = foldl insertMaybePair Map.empty (zip keys1 values1)
+updatedMap = foldl insertMaybePair mapInitial (zip keys2 values2) 
+-- using fold to add many mant values
+-- internally we are just doing Map.insert again and again
+
+-- insert maybe pair takes in a map, and a (key,value) pair and creates a new map from the old map and with the updated values
+-- method that can insert a maybe to our map
+insertMaybePair :: Ord k => Map.Map k a -> (k,Maybe a) -> Map.Map k a
+insertMaybePair myMap (key,Nothing) = myMap
+insertMaybePair myMap (key, Just value) = Map.insert key value myMap
+```
+
 
 ## Maybe Type: another parameterized type
 
