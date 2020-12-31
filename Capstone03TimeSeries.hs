@@ -103,3 +103,42 @@ instance Monoid (TS a) where
 
 tsAll :: TS Double
 tsAll = mconcat [ts1,ts2,ts3,ts4]    
+
+
+-- performing operations on the TS a
+
+-- let us compute the mean of a list
+mean :: Real a => [a] -> Double
+mean elements = sumOfElements / count
+                where sumOfElements = ( realToFrac . sum ) elements
+                      count = ( realToFrac . length) elements
+
+-- computing the mean of a Time Series TS
+
+meanTS :: Real a => TS a -> Maybe Double
+meanTS (TS [] [] ) = Nothing
+meanTS (TS time values) = if all (== Nothing) values then Nothing
+                          else (Just avg)
+                          where avg = mean cleanVals
+                                cleanVals = map fromJust (filter isJust values)
+
+
+meanAll = meanTS tsAll
+
+
+
+-- find diffs of two Maybes
+diffPair :: Num a => Maybe a -> Maybe a -> Maybe a
+diffPair _ Nothing = Nothing
+diffPair Nothing _ = Nothing
+diffPair (Just a) (Just b) = Just (a-b)
+
+-- let us now find the diff betweeen two TSes 
+diffTS :: Num a => TS a -> TS a
+diffTS (TS times []) = TS times [] 
+diffTS (TS times maybeValues) =  TS times (Nothing:diffedValues)
+                                where shiftedList = tail maybeValues
+                                      zippedList = zip shiftedList maybeValues
+                                      diffedValues = map (\ (x,y) -> diffPair x y) zippedList
+
+-- todo: moving average, other exercises from Capstone                                      
