@@ -810,4 +810,46 @@ drawerContents  drop            dropWhile
 [Just Heart,Just Heart,Just Brain,Just Spleen,Just Spleen,Just Kidney]
 ```
 
-*
+
+## I/O
+
+* ```IO``` is also a parameterized type. Unlike a List (which is, again, a container), ```IO``` represents a context in which the value comes from an Input/Output operation.
+
+Just like ```Maybe``` which represents a context in which a vaue might be missing.
+
+* To verify the above:
+```
+GHCi> :kind Maybe
+Maybe :: * -> *
+GHCi> :kind IO
+IO :: * -> *
+```
+
+* Examples, reading user input, reading from files, writing to console.s
+
+* IO is inherently stateful, it changes the state of files.
+
+* IO is also **impure**, refrential integrity is not followed. Because, a function can take in user input using ```getLine``` and return different values each time it is called.
+
+A function might read a value from a file whose value changes (by other programs). Calling this function multiple times will return different values each time.
+
+IO types are created to prevent pure and impure methods from mixing.
+
+IO is also prone to errors. 
+
+* Despite all the above, IO is important. 
+
+From the book
+```
+What good is a program that doesn’t change the state of the world in some way? To keep Haskell code pure and predictable, you use the IO type to provide a context for data that may not behave the way all of the rest of your Haskell code does.
+```
+
+* 
+
+
+
+
+
+
+
+
