@@ -1028,3 +1028,24 @@ You can also run it directly on ghci as well,
 2
 ["10","11","1","2"]
 ```
+
+
+###  Interacting with lazy I/O
+
+* In our previous examples, the number of lines to be read is fixed. 
+What if we have to keep on reading values from the console? 
+
+
+* We have the IO type to separate IO functions from other Haskell functions. ```main``` should contain very little logic.
+
+* In the example in the previous sub-section, we assumed that we *have* to deal with the inputs right away? Can we not defer it for the future?
+
+* Instead of assuming that the inputs are discrete IO values inputted by the user,
+let us treat user input like a *list of characters.*
+
+* That will make it much easier to separate the IO from the logic. 
+
+* For the above we use ```getContents```.
+This lets us treat the stream from the terminal as a list of characters.
+
+* 

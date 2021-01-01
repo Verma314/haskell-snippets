@@ -99,5 +99,7 @@ main = do
 {-Q1:
 Write your own version of replicateM, myReplicateM, that uses mapM. (Don’t worry too much about the type signature.)-}
 
-
 myReplicateM n ioAction = mapM (\ _ -> ioAction) [1..n]
+
+-- nice!
+
