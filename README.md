@@ -925,3 +925,106 @@ Statement is just a normal String. We had to use it because we were getting the 
 * "...the Monad type class allows you to write general programs that can work in a wide range of contexts."
 
 * *Haskell handles all the dangers of IO by ensuring that all I/O logic is contained in an IO type.*
+
+### Interacting with the command line
+
+* To get arguments, we use ```getArgs``` function found in System.Environment. 
+
+The type signature of getArgs is as follows:
+```
+getArgs :: IO [String]  
+```
+
+It is basically a list of strings but in the IO context. Hence the ```IO```
+
+getArgs is important to take user input.
+
+* To be able to map over this special list of strings, we need to use a different kind of a map function.
+```
+mapM_ putStrLn args
+```
+
+mapM is a modified map to map ```Monad``` types.
+mapM_  is modified mapM, such that it does not output a list. This is because the IO functions (called IO actions) do not return any values.
+
+* Interacting with the command line, an Example
+```
+main :: IO ()
+main = do
+        args <- getArgs
+        putStrLn "hi"
+        mapM_ putStrLn args
+
+-- to be able to use getArgs,
+-- we need to compile it in the command line        
+-- ghc 26ioIntro.hs
+-- ./26ioIntro.hs 1 2 3
+-- this outputs:
+{-
+hi
+1
+2
+3
+-}
+```
+
+
+* To get input from ghci itself, 3 times:
+```
+main :: IO()
+main = do 
+       userInput <- mapM (\ _ ->  getLine) [1,2,3]
+       mapM_ putStrLn myMap
+```
+
+```<-``` is used because mapM returns the values inputted by the user, all of which are the IO String,
+so it is returning ```[IO String]```
+
+```<-``` will let us pretend that this is list is a normal string list.
+
+* Instead of using the mapM and mapM_ technique above, 
+Haskell has a function called ```replicateM```
+
+```replicateM``` takes a number ```n``` and an IO action, and repeats the IO action ```n``` number of times.
+
+Although, one needs to import ```Control.Monad``` before using this function.
+
+```
+> :t replicateM
+replicateM :: Applicative m => Int -> m a -> m [a]
+```
+
+
+* Application of the above IO concepts:
+```
+-- we need to write a program that lets us sum n number of command line arguments,
+-- this n is accepted dynamically from the prompt
+-- then n values are read from the CLI
+-- the sum of the n values is returned
+main :: IO()
+main = do   
+       args <- getArgs
+       let linesToRead = if length args > 0
+                   then read (head args)
+                   else 0
+       numbers <- replicateM linesToRead getLine -- always remember, all the IO functions use <-, let is for normies
+       let sumOfInputs = sum (map read numbers :: [Int])
+       print (sumOfInputs) 
+```       
+
+
+* You can implement replicateM easily like this
+```
+myReplicateM n ioAction = mapM (\ _ -> ioAction) [1..n]
+```
+
+You can also run it directly on ghci as well,
+
+```
+> myReplicateM 4 getLine 
+10
+11
+1
+2
+["10","11","1","2"]
+```
