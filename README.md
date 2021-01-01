@@ -914,3 +914,14 @@ Statement is just a normal String. We had to use it because we were getting the 
 
 (How does this work?)
 
+* If you need to accept a ```Double``` or another type from the console. You can use ```read```
+
+
+* IO can use do-notation because it’s a member of a powerful type class called ```Monad```.
+```Do``` is not specific to IO, and can be used by any member of ```Monad``` type class.
+
+* ```Maybe``` is a part of the ```Monad``` type class too.
+
+* "...the Monad type class allows you to write general programs that can work in a wide range of contexts."
+
+* *Haskell handles all the dangers of IO by ensuring that all I/O logic is contained in an IO type.*
