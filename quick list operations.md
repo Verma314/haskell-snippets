@@ -1,5 +1,11 @@
 #### Quick operations
 
+
+0. Cartesian Product over two lists / List Comprehension
+```
+cartProd xs ys = [(x,y) | x <- xs, y <- ys]
+```
+
 1. Retrieve Values
 ```
 test9 = (!!) "1234567890" 1

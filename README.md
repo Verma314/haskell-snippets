@@ -844,12 +844,73 @@ From the book
 What good is a program that doesn’t change the state of the world in some way? To keep Haskell code pure and predictable, you use the IO type to provide a context for data that may not behave the way all of the rest of your Haskell code does.
 ```
 
-* 
 
 
+### More on I/O
+
+* A method of a type  ```IO ()``` can **not** return anything.
+
+Example, ```main :: IO()```
 
 
+* Take the example
+```
+helloPerson :: String -> String
+helloPerson name = "Hello" ++ " " ++ name ++ "!"
+
+main :: IO ()
+main = do
+   putStrLn "Hello! What's your name?"
+   name <- getLine                                      
+   let statement = helloPerson name                     `
+   putStrLn statement     
+```   
 
 
+From the above:
+1. ```getLine``` is an object of the type ```IO String```
+2. ```name``` consequently is an ```IO String``` too
+3. Whenever we need an IO String obejct to talk to the external world we use ```let```
+4. ```putStrLn``` returns nothing. 
+```putStrLn :: String -> IO ()```
+5. ```main``` is not a function, it is an IO Action
+"Some IO actions return no value, some take no input, and others don’t always return the same value given the same input."
 
+*Other ideas directly from W. Kurt's book*
+
+6. "The interesting thing about getLine is that you have a useful return value of the type IO String."
+7. "Because I/O is so dangerous and unpredictable, after you have a value come from I/O, **Haskell doesn’t allow you to use that value outside of the context of the IO type***. For example, if you fetch a random number using randomRIO, you can’t use that value outside main or a similar IO action. " 
+8. ". Because of this, after you’re working with data in the context of IO, it must stay there. This initially may seem like a burden. After you’re familiar with the way Haskell separates I/O logic from everything else, you’ll likely want to replicate this in other programming languages (though you won’t have a powerful type system to enforce it)."
+
+
+### DO-notation
+
+* Because one can not escape the IO context, one needs to find a way to perform sequence of computations within the IO context. The ```do``` keyword helps us with that.
+
+* The ```do``` keyword allows us to use IO types *as if* they were regaular types.
+
+* This is why both ```let``` and ```<-``` are used in the do block.
+
+* **Variables assigned with ```<-``` allow us to act as though a type ```IO a``` is just of type a.**
+Example
+```
+name <- getLine        
+```
+We can now pretend that ```name``` that is an ```IO String``` is a ```String```
+
+* **We use let statements whenever you create variables that aren’t IO types.**
+Example
+```
+let statement = helloPerson name  
+```
+
+Not using a let in a do block (when creating a non-IO) variable will give us a parse error.
+
+Statement is just a normal String. We had to use it because we were getting the values from a function in a non-IO context.
+
+* We had to use ```<-``` for ```name <- getLine```, because in the line after that we pass this IO String to a function that only accepts a String.
+
+"Do-notation allows you to assign an IO String variable by using <-, to act like it’s an ordinary String, and then to pass it to functions that work with only regular Strings."
+
+(How does this work?)
 
