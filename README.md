@@ -1099,3 +1099,68 @@ It does keep asking the user for values basically, and keeps putting them into n
 How do we make it reactive?
 (not sure, attempt in 27lazyIO.hs)
 
+## Text and Unicode
+
+* String (a list of chars) is a really inefficient way to process Strings.
+There is a another type called Text which will help us with string processing.
+
+
+* Text is implemented as an array under the hood, unlike String which is implemented as a list
+
+* Text does not use lazy evaluation.
+
+* We have two important functions for String/Text conversion
+```
+T.pack :: String -> T.Text
+T.unpack :: T.Text -> String
+```
+
+These conversion computations are not cheap.
+
+
+* 
+```
+myWord :: T.Text
+myWord = "random"
+``` 
+This above would throw an error, because "these literals" are Strings in Haskell.
+
+And we **can not** fix this issue in haskell code.
+
+You can pass a flag before compiling a hs program, or pass it as a flag when invoking ghci.
+
+Example:
+
+```$ ghc text.hs -XOverloadedStrings```
+
+Another way, is to add a pragma on top of our file like,
+``` 
+{-# LANGUAGE <Extension Name> #-}
+```
+
+For text,
+it will be:
+```{-# LANGUAGE OverloadedStrings #-}```
+
+This is a **language extension**
+
+* almost all the  String function their corresponding version for working on Text in Data.Texts
+
+Example. ```lines```
+
+
+* See files, 28text.hs and 'Quick Text Operations.hs'
+
+* Text is a monoid, and Text values can be combined using ```mconcat```
+
+* ```putStrLn``` does not work for Text types.
+However, ```TIO.putStrLn``` does work.
+
+TIO needs to be imported
+```
+import qualified Data.Text.IO as TIO
+```
+
+```print``` might work, but it would not print unicode into the console, it would turn the symbols into its representation like ```\401``` etc
+
+
