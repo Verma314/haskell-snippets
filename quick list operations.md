@@ -50,6 +50,13 @@ take  10 (cycle [1,2,3])
 subseq start end list =  drop start (take end list) 
 ```
 
+
+10. How to split a string on '\n'
+```
+> lines "aa\nbb\nbb"
+["aa","bb","bb"]
+```
+
 * more info on
 ```
 look up package: Data.List

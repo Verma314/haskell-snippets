@@ -1048,4 +1048,54 @@ let us treat user input like a *list of characters.*
 * For the above we use ```getContents```.
 This lets us treat the stream from the terminal as a list of characters.
 
-* 
+Using ```getContents``` we can completely re-write the program, assuming we have a list of characters -- and leaving the IO operations for later.
+
+* Important: 
+```getContents``` will keep asking for user input, until we send it an EOF,
+which is ```Control-D```
+
+* One can then pass the contents from ```getContents``` to regular Haskell functions
+```
+       contents <- getContents
+       let numbers = toInts contents
+       print (sum numbers)
+```
+
+This is the only time we have to do IO  / treat our list as IO.
+
+Rest of the logic is written without the ```IO ()```
+
+
+* Example of lAZY IO:
+```
+quoteGenerator  :: Int -> String
+quoteGenerator 1 = "Hi QUote 1"
+quoteGenerator 2 = "Hi QUote 2"
+quoteGenerator 3 = "Hi QUote 3"
+quoteGenerator _ = "Hi QUote Random"
+
+main :: IO ()
+main = do
+       putStrLn "Enter a number"
+       contents <- getContents
+       mapM_ putStrLn (map quoteGenerator (toInts contents))
+```
+See, over here the promt can keep asking for input, 
+
+because essentially contents is inside the mapM_
+and we keep adding the the contents list.
+Hence it keeps invoking the ```putStrLn```
+
+*  In this example the prompt has to close
+```
+main4 :: IO ()
+main4 = do
+       contents <- getContents
+       let numbers = toInts contents
+       print (sum numbers)
+```
+It does keep asking the user for values basically, and keeps putting them into numbers. But once the Ctrl-D is pressed, there is no more addition to ```getContents``` and the result gets printed.
+
+How do we make it reactive?
+(not sure, attempt in 27lazyIO.hs)
+
