@@ -1164,3 +1164,103 @@ import qualified Data.Text.IO as TIO
 ```print``` might work, but it would not print unicode into the console, it would turn the symbols into its representation like ```\401``` etc
 
 
+## Files
+
+* To open a file, use this function:
+```
+openFile :: FilePath -> IOMode -> IO Handle
+```
+
+where FilePath is a string
+```
+type FilePath = String
+```
+And IO mode is,
+```
+data IOMode = ReadMode | WriteMode | AppendMode | ReadWriteMode
+```
+
+
+It returns an ```IO Handle``` which represents a reference to the file.
+
+* To close a file ```hClose myFile```
+
+* To read an write to file ```hPutStrLn``` and ```hGetLine```
+
+Example,
+
+```
+firstLine <- hGetLine helloFile
+```
+
+* To check if the ```IO Handle``` has reached EOF:
+```
+hIsEOF file
+```
+
+Whose type signature is:
+
+```
+*Main T> :t hIsEOF
+hIsEOF :: Handle -> IO Bool
+```
+
+## More IO tools
+
+* We have some more IO functions which make reading and writing to a file easy.
+To read:
+```
+input <- readFile fileName
+```
+
+to append:
+```
+appendFile "output.txt" "blah"
+```
+
+* These methods above do not close the handle. So one might run into strange lazy evalutation errors here (to research more on this).
+
+To prevent that from happening, one can do is use Text instead of String.
+Text is a strict data type, i.e it does not use lazy IO.
+
+Example from W.Kurt Get Programming in Haskell:
+```
+{-# LANGUAGE OverloadedStrings #-}
+
+import System.IO
+import System.Environment
+import qualified Data.Text as T
+import qualified Data.Text.IO as TI
+
+getCounts :: T.Text -> (Int,Int,Int)
+getCounts input = (charCount, wordCount, lineCount)
+ where charCount = T.length input
+       wordCount = (length . T.words) input
+       lineCount = (length . T.lines) input
+
+countsText :: (Int,Int,Int) -> T.Text
+countsText (cc,wc,lc) = T.pack (unwords ["chars: "
+                                   , show cc
+                                   , " words: "
+                                   , show wc
+                                   , " lines: "
+                                   ,  show lc])
+
+main :: IO ()
+main = do
+  args <- getArgs
+  let fileName = head args
+  input <- TI.readFile fileName
+  let summary = (countsText . getCounts) input
+  TI.appendFile "stats.dat"
+                (mconcat [(T.pack fileName), " ",summary, "\n"])
+  TI.putStrLn summary
+```
+
+The author says,
+
+"Strict evaluation means that your I/O code works just as you’d expect it to in any other programming language. Although lazy evaluation has many great benefits, for any nontrivial I/O, reasoning about its behavior can be tricky."
+
+"As soon as your I/O becomes even moderately complex, involving reading and writing files, or operations for which order is important, stick with strict evaluation."
+
+
