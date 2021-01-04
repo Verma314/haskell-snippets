@@ -1205,7 +1205,7 @@ Whose type signature is:
 hIsEOF :: Handle -> IO Bool
 ```
 
-## More IO tools
+### More IO tools
 
 * We have some more IO functions which make reading and writing to a file easy.
 To read:
@@ -1264,3 +1264,29 @@ The author says,
 "As soon as your I/O becomes even moderately complex, involving reading and writing files, or operations for which order is important, stick with strict evaluation."
 
 
+## Working with binary data
+
+* ```ByteString``` allow us to treat binary data as if they were regular strings.
+
+* ByteString is not for strings alone, but can deal with any sort of Binary streams.
+
+* 
+
+```
+{-# LANGUAGE OverloadedStrings #-}
+import qualified Data.ByteString as B
+import qualified Data.ByteString.Char8 as BC
+```
+
+```Data.ByteString``` does not let us use ByteStrings as ```char```, so we use Data.```ByteString.Char8```, as below,
+
+
+```
+bcInt :: BC.ByteString
+bcInt = "6"
+
+bcToInt :: BC.ByteString -> Int
+bcToInt givenByteString = (read . BC.unpack) givenByteString
+```
+
+                    
