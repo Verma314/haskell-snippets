@@ -90,3 +90,25 @@ rawToInt byte = (read . T.unpack . E.decodeUtf8) byte
 
 getRecordLength :: MarcLeaderRaw -> Int
 getRecordLength leader = rawToInt (B.take 5 leader)
+
+
+-- now we want to separate out the records from 
+-- the entire file
+separateRecords :: B.ByteString -> (MarcRecordRaw,  B.ByteString)
+separateRecords bytes = B.splitAt  lengthOfRecord bytes
+    where lengthOfRecord = getRecordLength bytes
+
+
+allRecords :: B.ByteString -> [MarcRecordRaw]
+allRecords marcStream = if marcStream == B.empty
+                        then []
+                        else next : allRecords rest
+  where (next, rest) = separateRecords marcStream
+
+
+readMARC :: IO ()
+readMARC = do
+  marcData <- B.readFile "simple.mrc"
+  let marcRecords = allRecords marcData
+  print (length marcRecords)
+
