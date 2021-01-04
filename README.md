@@ -1298,4 +1298,5 @@ textWuthUnicode2 = E.decodeUtf8 textWithUni
 TIO.putStrLn textWuthUnicode2 
 ```                    
 
+* https://stackoverflow.com/questions/3951722/whats-the-difference-between-unicode-and-utf-8
 
