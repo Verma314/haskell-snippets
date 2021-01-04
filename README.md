@@ -1289,4 +1289,11 @@ bcToInt :: BC.ByteString -> Int
 bcToInt givenByteString = (read . BC.unpack) givenByteString
 ```
 
-                    
+* How to print unicode to the console?
+
+```
+import qualified Data.Text.Encoding as E
+textWithUni = E.encodeUtf8 "Textƒƒƒ"
+textWuthUnicode2 = E.decodeUtf8 textWithUni
+TIO.putStrLn textWuthUnicode2 
+```                    

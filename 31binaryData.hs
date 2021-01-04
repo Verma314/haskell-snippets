@@ -133,3 +133,5 @@ glitch4 filename = do
                     contents <- BC.readFile filename
                     out <- foldM (\bytes func -> func bytes ) contents [randomReplaceByte, randomSortSelection,randomReplaceByte,randomSortSelection]
                     BC.writeFile "out2.jpg" out
+
+                    
