@@ -112,3 +112,89 @@ readMARC = do
   let marcRecords = allRecords marcData
   print (length marcRecords)
 
+
+
+type MarcDirectoryRaw = B.ByteString
+
+getBaseAddress :: MarcLeaderRaw -> Int
+getBaseAddress leader = rawToInt (B.take 5 remainder)
+  where remainder = B.drop 12 leader
+
+getDirectoryLength :: MarcLeaderRaw -> Int
+getDirectoryLength leader = getBaseAddress leader - (leaderLength + 1)
+
+getDirectory :: MarcRecordRaw -> MarcDirectoryRaw
+getDirectory fullRecord = B.take directoryLength fullRecord
+    where withoutLeader = B.drop leaderLength fullRecord
+          directoryLength = getDirectoryLength (getLeader fullRecord)
+
+
+
+type MarcDirectoryEntryRaw = B.ByteString
+
+dirEntryLength :: Int
+dirEntryLength = 12
+
+
+--This is a fairly straightforward function: 
+-- you take a chunk of 12 bytes and add them to a list until there’s no more list 
+-- left.
+splitDirectory :: MarcDirectoryRaw -> [MarcDirectoryEntryRaw]
+splitDirectory directory = firstMeta : restOfTheDirectory
+    where (firstMeta,rest) = B.splitAt 12 directory 
+          restOfTheDirectory = if directory == B.empty then []
+                               else splitDirectory(rest)
+    
+
+data FieldMetadata = FieldMetadata { tag         :: T.Text
+                                   , fieldLength :: Int
+                                   , fieldStart  :: Int } deriving Show
+
+makeFieldMetadata :: MarcDirectoryEntryRaw -> FieldMetadata
+makeFieldMetadata entry = FieldMetadata textTag theLength theStart
+  where (theTag,rest) = B.splitAt 3 entry
+        textTag = E.decodeUtf8 theTag
+        (rawLength,rawStart) = B.splitAt 4 rest
+        theLength = rawToInt rawLength
+        theStart = rawToInt rawStart
+
+getFieldMetadata ::  [MarcDirectoryEntryRaw] -> [FieldMetadata]
+getFieldMetadata rawEntries = map makeFieldMetadata rawEntries
+
+type FieldText = T.Text
+
+{-
+What you want now is to take a MarcRecordRaw, FieldMetadata 
+
+and get back a FieldText so you can start looking up useful values!
+
+To do this, 
+you first have to drop both the leader and the directory from your MarcRecord 
+so you end up with the base record. 
+
+Then you can drop the fieldStart
+from the record and finally take the fieldLength from this remaining bit.
+-}
+
+getTextField :: MarcRecordRaw -> FieldMetadata -> FieldText
+getTextField record fieldMetadata = E.decodeUtf8 byteStringValue
+    where recordLength = getRecordLength (getLeader record)
+          baseAddress = getBaseAddress (getLeader record)
+          baseRecord = B.drop baseAddress record
+          baseAtEntry = B.drop (fieldStart fieldMetadata) baseRecord
+          byteStringValue =  B.take (fieldLength fieldMetadata) baseAtEntry
+
+
+--  extracting info out of the FieldText
+fieldDelimiter :: Char
+fieldDelimiter = toEnum 31
+titleTag :: T.Text
+titleTag = "245"
+titleSubfield :: Char
+titleSubfield = 'a'
+authorTag :: T.Text
+authorTag = "100"
+authorSubfield :: Char
+authorSubfield = 'a'
+          
+-- bored of this capsstone, to review later
