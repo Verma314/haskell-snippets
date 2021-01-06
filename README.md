@@ -102,6 +102,12 @@ reduce_right op init (x:xs) = op x (reduce_right op init xs)
 
 ```
 
+### Random
+
+* ```instance Eq Int -- Defined in ‘GHC.Classes’```
+means that Int implements Eq in GHC.Classes
+
+
 ## OOP using FP
 * OOP "All objects can be viewed as a collection of attributes that you send messages to"
 
@@ -1300,3 +1306,60 @@ TIO.putStrLn textWuthUnicode2
 
 * https://stackoverflow.com/questions/3951722/whats-the-difference-between-unicode-and-utf-8
 
+
+## Functors 
+
+* "The Functor type class provides a generic interface for applying functions to values in a container or context."
+
+* Consider these parameterized types (parameterized by Int)
+```[Int]```, ```Map String Int```, ```Maybe Int```, ```IO Int```
+
+These above are types that are *in a context.*
+
+Let's say we have a function, ```X :: Int -> String```
+
+Now without functors, we would need to write a customized version of ```X``` for all of the above parameterized types.
+(i.e a separate version for a Maybe Int, IO Int, [Int] etc )
+
+With functors, we will have a "uniform way" to apply a single function to all these parameterized types.
+
+
+
+* Usefulness of tools such as ```Maybe``` are reduced if you have to keep implemeting for every function ```Func :: a -> b```, another function with a similar function, ```FuncMaybe :: Maybe a -> Maybe b```
+
+A "special" version will need to be written for each of these functions, when implementing the logic with a type in a context.
+
+
+
+* Now, Maybe is a member of the Functor type class
+```
+> :info Maybe
+.
+instance Functor Maybe -- Defined in ‘GHC.Base’
+.
+```
+The above means that the Maybe type class implements the Functor type class.
+(ie Maybe is a functor (? can we say that?))
+
+
+* Let's look at Functor,
+```
+*Main> :info Functor 
+class Functor (f :: * -> *) where
+  fmap :: (a -> b) -> f a -> f b
+  (<$) :: a -> f b -> f a
+  {-# MINIMAL fmap #-}
+        -- Defined in ‘GHC.Base’
+instance Functor (Either a) -- Defined in ‘Data.Either’
+instance Functor [] -- Defined in ‘GHC.Base’
+instance Functor Maybe -- Defined in ‘GHC.Base’
+.
+.
+```
+
+This shows that the type class ```Functor``` is implemented by ```Maybe```,
+
+and also that functor does't implement any other Type Classes (? to verify)
+
+Another thing to note is:
+For some type class to implement Functor
