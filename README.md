@@ -1362,4 +1362,69 @@ This shows that the type class ```Functor``` is implemented by ```Maybe```,
 and also that functor does't implement any other Type Classes (? to verify)
 
 Another thing to note is:
-For some type class to implement Functor
+For some type class to implement Functor they minimally need to implement ```fmap```.
+
+```<$>``` is the same as ```fmap```
+
+
+* Any type class that wants to be a Functor must implement:
+```
+fmap :: Functor f => (a -> b) -> f a -> f b
+```
+
+```fmap``` accepts a function (a->b)
+and an argument ```f a```, 
+
+here ```f a ``` is a functor of type a, example Maybe Int
+
+* ```fmap``` **provides an adapter**, it is a binary operation
+
+
+* Check ```32functors.hs``` for more explanation and examples.
+
+* ```Maybe``` *is* a functor.
+Which means we can pass a ```Maybe``` to fmap, and a regular function, and it will apply that for uss:
+
+```
+Prelude> fmap (+1) (Just 10)
+Just 11
+
+Prelude> fmap (+1) (Just 10134.3)
+Just 10135.3
+
+Prelude> fmap (++ "1") (Just "as")
+Just "as1"
+
+```
+
+See how we no longer would need a function like this:
+```
+incMaybe :: Maybe Int -> Maybe Int
+incMaybe (Just n) = Just (n + 1)
+incMaybe Nothing = Nothing
+```
+Which takes in a Type (that is in a Maybe context) and applies a normal Int function to it -- wraps it and returns the maybe; we don't need to implement this.
+
+We can just use ```fmap```,
+which accepts the 'normal function definition', and a 'type in a context'
+
+
+*  Works on any function that works on the nested type
+convertLookedUpValToString =  fmap show (Just 10)
+-- Just "10"
+
+*  Reversing a Maybe String using functors:
+```
+reverseMaybeWithFunctors :: Maybe String -> Maybe String
+reverseMaybeWithFunctors maybeStr = reverse <$> maybeStr
+```
+what is the functor here? is it the maybe? 
+
+Again,
+```
+>:t fmap
+fmal :: Functor f => (a -> b) -> f a -> f b 
+```
+
+seems like the ```Maybe``` is the ```functor```
+Correct me if I am saying this incorrectly.
