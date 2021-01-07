@@ -1,3 +1,4 @@
+import qualified Data.Map as Map  
 -- functors
 
 {-Q1:
@@ -82,5 +83,100 @@ convertLookedUpValToStringAlt = show <$> Just 10
 
 reverseMaybeWithFunctors :: Maybe String -> Maybe String
 reverseMaybeWithFunctors maybeStr = reverse <$> maybeStr
-
 -- what is the functor here?
+
+
+
+
+-- example from book:
+
+data RobotPart = RobotPart{ name :: String   , 
+                            description :: String   , 
+                            cost :: Double   , 
+                            count :: Int   } deriving Show
+
+
+leftArm :: RobotPart
+leftArm  = RobotPart
+   { name = "left arm"
+   , description = "left arm for face punching!"
+   , cost = 1000.00
+   , count = 3
+   }
+
+rightArm :: RobotPart
+rightArm  = RobotPart
+   { name = "right arm"
+   , description = "right arm for kind hand gestures"
+   , cost = 1025.00
+   , count = 5
+   }
+
+robotHead :: RobotPart
+robotHead  = RobotPart
+   { name = "robot head"
+   , description = "this head looks mad"
+   , cost = 5092.25
+   , count = 2
+   }
+
+
+-- we gotta rended the info contained in the RobotPart as HTML,
+type Html = String
+renderHtml :: RobotPart -> Html
+renderHtml part = mconcat ["<h2>",partName, "</h2>"
+                          ,"<p><h3>desc</h3>",partDesc
+                          ,"</p><p><h3>cost</h3>"
+                          ,partCost
+                          ,"</p><p><h3>count</h3>"
+                          ,partCount,"</p>"]
+ where partName = name part
+       partDesc = description part
+       partCost = show (cost part)
+       partCount = show (count part)
+
+
+partsDB :: Map.Map Int RobotPart
+partsDB = Map.fromList keyVals
+ where keys = [1,2,3]
+       vals = [leftArm,rightArm,robotHead]
+       keyVals = zip keys vals
+
+
+
+-- given that we have a map 
+-- index all the parts we have 
+
+allParts :: [RobotPart]
+allParts = map snd (Map.toList partsDB)
+
+-- Here’s how you can apply renderHtml to a list of values by using <$>.
+
+allPartsHtml :: [Html]
+allPartsHtml = renderHtml <$> allParts
+
+
+-- how do we use fmap to create a Map mapping the ints to Html, instead of RobotPart
+htmlPartsDB :: Map.Map Int Html
+htmlPartsDB = fmap renderHtml partsDB 
+
+-- Now see, how we were able to transform 
+-- a whole list of RobotParts into HTML values
+-- a whole MAP (int, RobotParts) into Map (int, HTMLRoboParts)
+
+-- all we had was just a simple logic to convert RobotParts to HTMLRoboParts
+-- but now we can convert any parameterized type into the type parameterized by another type
+
+-- Functors can be thought of as "mappable" types (really?)
+
+
+
+--- IO:
+
+leftArmIO :: IO RobotPart
+leftArmIO = return leftArm
+
+
+-- to IO an HTML, do not write a new logic
+leftArmHTML :: IO Html
+leftArmHTML = renderHtml <$> leftArmIO

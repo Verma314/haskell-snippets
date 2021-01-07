@@ -1309,6 +1309,8 @@ TIO.putStrLn textWuthUnicode2
 
 ## Functors 
 
+* "Functor allow us to generalize by solving a single problem once, and automatically solves it for multiple parameterized types"
+
 * "The Functor type class provides a generic interface for applying functions to values in a container or context."
 
 * Consider these parameterized types (parameterized by Int)
@@ -1426,5 +1428,64 @@ Again,
 fmal :: Functor f => (a -> b) -> f a -> f b 
 ```
 
+
+```Functor f =>``` means that ```f``` being used in the type signature is a type of ```Functor```
+
+
 seems like the ```Maybe``` is the ```functor```
 Correct me if I am saying this incorrectly.
+
+
+* A lot of these parameterized types have the kind 
+``` * -> *```
+
+Example, ```Maybe``` which takes in a type, and creates a new type for you.
+```
+type MI = Maybe Int
+
+-- to use it:
+x :: MI ; x = Just 10
+
+```
+another example,
+```
+*Main> :kind []
+[] :: * -> *
+```
+All functors are of the kind ```* -> *``` .
+
+*Many* parameterized types of the kind ```* -> *``` are instances of Functor.
+
+
+* The fmap converts here a Maybe part type to a Maybe HTML
+
+```
+partHtml :: Maybe Html
+partHtml = renderHtml <$> (Just part)
+```
+
+* a list of parts to a list of html
+
+```
+allPartsHtml :: [Html]
+allPartsHtml = renderHtml <$> allParts
+```
+
+* a map of (int,part) to a map of (int, html)
+
+```
+htmlPartsDB :: Map.Map Int Html
+htmlPartsDB = renderHtml <$> partsDB
+```
+
+* **an IO of part to an IO of html**
+```
+htmlSnippet :: IO Html
+htmlSnippet = renderHtml <$> leftArmIO
+```
+
+* ```<$>``` provides a common interface to apply any function to a value in a context. 
+
+It helps with IO to change context -- but can not take things out of IO conext.
+
+* 
