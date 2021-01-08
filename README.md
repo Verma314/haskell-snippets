@@ -1492,4 +1492,10 @@ htmlSnippet = renderHtml <$> leftArmIO
 
 It helps with IO to change context -- but can not take things out of IO conext.
 
-* 
+## Applicative
+
+* Functors can be very useful when we have one value in a context.
+What if two of our values are in a context. 
+And we want to operate on them? And simultaneous produce the result which is in the same context.
+
+
