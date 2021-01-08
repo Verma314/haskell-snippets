@@ -180,3 +180,62 @@ leftArmIO = return leftArm
 -- to IO an HTML, do not write a new logic
 leftArmHTML :: IO Html
 leftArmHTML = renderHtml <$> leftArmIO
+
+
+--
+
+-- exercises,
+
+data Box a = Box a deriving Show
+
+instance Functor Box where
+    fmap func (Box a) = Box (func a)
+
+
+-- Box is a functor now
+-- now lets write a generic logic:
+
+listifyNumber :: Int -> [Int]
+listifyNumber a = Prelude.take 10 (cycle [a] )
+
+morePresents :: Box Int -> Box [Int]
+morePresents box = fmap listifyNumber box
+
+--
+
+myBox :: Box Int
+myBox = Box 1
+
+
+wrap :: Int -> Box Int
+wrap a = Box a 
+--wrap :: Num a => Box a -> Box (Box a)
+--wrap box = Box box
+
+-- we gotta make that above wrap logic work with functors
+rewrapBox = fmap wrap myBox
+
+-- lets make a simple unwrap
+unwrap :: Num a => Box a -> a
+unwrap (Box a) = a
+
+unwrapABox = unwrap <$> rewrapBox
+
+
+{-Write a command-line interface for partsDB that lets the user look up 
+  the cost of an item, given an ID. 
+  
+  Use the Maybe type to handle the case of the user entering missing input.-}
+
+partLookup partId = Map.lookup partId partsDB
+
+-- let us IO the partID
+partID :: Int -> IO Int
+partID id = return id
+
+-- now lets apply the functor on this partId
+mylookup :: Int -> (Map.Map Int RobotPart) -> IO (Maybe RobotPart)
+mylookup id partsDB = (\ x -> Map.lookup x partsDB) <$> (partID id)
+
+
+---------------------------------------------------------------------

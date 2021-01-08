@@ -1309,6 +1309,8 @@ TIO.putStrLn textWuthUnicode2
 
 ## Functors 
 
+*  "The Functor type class allows us to apply an ordinary function to values inside a container (for example, List) or a context (for example, IO or Maybe)"
+
 * "Functor allow us to generalize by solving a single problem once, and automatically solves it for multiple parameterized types"
 
 * "The Functor type class provides a generic interface for applying functions to values in a container or context."
@@ -1456,7 +1458,9 @@ All functors are of the kind ```* -> *``` .
 
 *Many* parameterized types of the kind ```* -> *``` are instances of Functor.
 
+* Imp: "Functors are incredibly useful because they allow you to reuse a single function with any type belonging to the Functor type class."
 
+That means a Maybe *is* a functor.
 * The fmap converts here a Maybe part type to a Maybe HTML
 
 ```
