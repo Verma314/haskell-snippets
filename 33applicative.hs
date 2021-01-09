@@ -40,3 +40,82 @@ haversine coords1 coords2 = earthRadius * c
        a = (sin (dlat/2))^2 + cos rlat1 * cos rlat2 * (sin (dlong/2))^2
        c = 2 * atan2 (sqrt a) (sqrt (1-a))
        earthRadius = 3961.0
+
+
+-- let us try to get values from locationDb for two cities
+-- and take those two values and give it to haversine to compute the distance
+
+getCoordinatesOfCity :: String -> Maybe LatLong
+getCoordinatesOfCity city =  Map.lookup city locationDB
+
+
+
+{-
+unwrap (Just val) = val
+
+compute :: String -> String -> IO String
+compute city1 city2 = do
+                      let city1Lat = getCoordinatesOfCity city1
+                      let city2Lat = getCoordinatesOfCity city2
+                      if ( ( city1Lat != Nothing ) || ( city2Lat != Nothing )  )
+                        let city1Val = unwrap city1Lat
+                        let city2Val = unwrap city2Lat
+                        return "ha"
+-}
+
+
+{-. What you want to end up with is an IO action 
+that takes a Maybe value for your distance and either prints the distance 
+or tells the user that an error occurred.
+-} 
+printDistance :: Maybe Double -> IO ()
+printDistance (Just distance ) = putStrLn (show distance)
+printDistance Nothing = error "Not a distance"
+                                                        
+
+-- Write addMaybe for adding two Maybe Ints.
+addMaybe :: Maybe Int -> Maybe Int -> Maybe Int
+addMaybe (Just a) (Just b) = Just (a+b)
+addMaybe _ _ = Nothing
+
+
+--addMaybe Nothing a = a
+--addMaybe a Nothing = a
+
+
+
+{-
+Can we create an Applicative Type?
+
+Okay fmap in functor is defined:
+fmap :: Functor f => (a -> b) -> f a -> f b
+
+example:
+fmap (add) (Just 10) (Just 20)
+...
+
+What we want?
+zmap :: Functor f => (a -> c -> d) -> f a -> f c -> f d
+fmap :: Functor f => (a -> b     ) -> f a -> f b
+
+-- create a function which 
+b = c -> d
+
+and 
+f b = f c -> f d
+
+to Concretize:
+
+add = b  
+
+Maybe add = 
+
+
+nope,
+-}                                      
+
+
+-- lets say we have a partial function,
+
+distanceFromNY = haversine newYork
+    where (Just newYork) = getCoordinatesOfCity "New York" 

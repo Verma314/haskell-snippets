@@ -868,7 +868,7 @@ main :: IO ()
 main = do
    putStrLn "Hello! What's your name?"
    name <- getLine                                      
-   let statement = helloPerson name                     `
+   let statement = helloPerson name                     
    putStrLn statement     
 ```   
 
@@ -1496,6 +1496,20 @@ It helps with IO to change context -- but can not take things out of IO conext.
 
 * Functors can be very useful when we have one value in a context.
 What if two of our values are in a context. 
+
 And we want to operate on them? And simultaneous produce the result which is in the same context.
 
+Functors's fmap literally works on single argument function
+```
+fmap :: (a->b) -> f a -> f b 
+```
+(where f is any parameterized type which is a functor),
 
+what if we want a map (?) which can work on multiple values?
+
+like
+```
+requiredMap :: (a -> b -> c ) -> f a -> f b -> f c
+```
+
+* 
