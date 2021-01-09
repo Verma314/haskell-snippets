@@ -119,3 +119,28 @@ nope,
 
 distanceFromNY = haversine newYork
     where (Just newYork) = getCoordinatesOfCity "New York" 
+
+
+
+
+-- <?> :: (a -> b -> c) -> f a -> f b -> f c
+
+-- zmap :: (a -> (b -> c)) -> f a -> (f b -> f c)
+-- 
+--zmap normalType partialFunctionNormal typeInTheContext normalTypeInConext = <$>  partialFunctionNormal
+-- <$> ::  (b -> c ) -> f b -> f c 
+
+
+-- use this somehow:
+-- (<*>) :: f (a -> b) -> f a -> f b
+-- (<$>) :: (a -> b) -> f a -> f b
+
+x func (Just v) anotherJust = Just (func v) <*> anotherJust
+
+z = ( fmap(+) (Just 100)) <*> (Just 100)
+
+z2 a b= ( fmap(+) a) <*> b 
+
+zmap func a b = ( fmap func a ) <*> b  -- dang.
+
+
