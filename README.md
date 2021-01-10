@@ -1512,4 +1512,177 @@ like
 requiredMap :: (a -> b -> c ) -> f a -> f b -> f c
 ```
 
-* 
+### Partial functions with fmap
+
+```map``` works like this: it takes in a unary function and a ```list```. And applies the operator on the values inside the list.
+
+```fmap``` works similarly, it takes a unary function and a ```Functor```. And applies the operator on the values inside the Functor. 
+
+(A functor is a List, or a Maybe, or an IO, etc)
+
+Example: ``` map (+ 1) [1,2,3]```, returns:  ```[2,3,4]```.
+
+
+**What if we do not provide a binary function to map, and pass it a binary function**
+```
+map (+) [1,2,3]
+```
+
+It returns a list of partially applied functions, ```[ (+) 1 , (+) 2, (+) 3]```
+
+The type of this is ```[ a -> a ]```
+
+Similarly, we can use ```fmap```
+```
+fmap (+) (Just 10)
+```
+
+which returns 
+```
+Just ( (+) 10 )
+```
+
+The type of which is ```Maybe (a -> a)```
+
+Thus, a *function is a context* is created.
+
+
+
+### **How to use the applicative**
+
+Using the idea from [[03 Partial functions with FMAP]]
+
+```
+  maybeInc = (+) <$> (Just 10)
+```
+
+Note its type, ```maybeInc``` is a function in a context. (Parameterized function?)
+```
+> :t maybeInc 
+  maybeInc :: Num a => Maybe (a -> a)
+```
+
+
+The **Applicative** type contains a function ```<*>```, whose type is
+```
+  (<*>) :: f (a -> b) -> f a -> f b
+```
+
+Applicative’s <*> allows us to use a function in a context. 
+
+We can now use ```maybeInc``` :
+
+```
+> maybeInc <*> (Just 50)
+Just 60`
+```
+
+To re-write:
+```
+> value = (+) <$> (Just 10)   <*> (Just 60)
+> value
+Just 70
+```
+
+**In Summary**
+
+To create a generic function which re-uses functions, mapped from regular type and uses them with parameterized types:
+
+```
+applicativeFunc :: Applicative f => ( a -> b -> c ) -> f a -> f b -> f c 
+applicativeFunc binaryfunc p_obj1 p_obj2 = usingApplicative
+	where functionInAContext = fmap binaryfunc p_obj1
+		  usingApplicative = functionInAContext <*> p_obj2
+```
+
+The ```applicativeFunc```  takes in a binary function, and two parameterized types, first we create a partial application by applying ```fmap``` with the binary operation and the first parameterized object. It creates for us an 
+```f binary function p_obj1``` , which is a "unary" function.
+
+(Remember that <\*> accept a unary function in a context, and another parameterized type.)
+
+Now that we have our unary function in a context, and the second parameterized object, we return a ```functionInAContext <*> p_obj2```
+
+Testing it out,
+
+```
+> applicativeFunc (+) (Just 10) (Just 30)	
+Just 40
+```
+
+
+More examples,
+
+```
+> regularFunctionInParameterized (+) [1,2,3] [4,5,6]
+[5,6,7,6,7,8,7,8,9]
+
+
+> regularFunctionInParameterized (+) [1,2,3] [1]
+[2,3,4]
+
+```
+
+
+### Operating on mulitple values in a context
+
+We have read user input as int,
+```
+readInt :: IO Int
+readInt = read <$> getLine
+```
+
+What if we have a function which takes not one (e.g. [[03 Partial functions with FMAP|fmap]]) argument. Not two ([[03-01 What if we want to pass two arguments to fmap|applicative]]) but an arbitrary number of arguments?
+
+In this case, we apply the first argument to the function via fmap, thus creating a partial function in a context.  Then we apply the applicator's app ( ```<*>```) along with another argument (parameterized), which ends up creating another partial application, after which we apply another argument (parameterized), until we have applied all the arguments, and end up with a value in a context. 
+
+Example,
+
+take the function:
+
+```
+minOfThree :: (Ord a) => a -> a -> a -> a
+minOfThree val1 val2 val3 = min val1 (min val2 val3)
+```
+
+Can we apply this function to values that are in an IO context? For example coming from ```readInt```.
+
+Let us examine the partial functions (in a *context*) created on the way:
+```
+partialApplication1 :: IO (Int -> Int -> Int)
+partialApplication1 = fmap minOfThree readInt
+```
+
+Now we can pass this ```partialApplication1```  to ```<*>```
+```
+partialApplication2 :: IO (Int -> Int)
+partialApplication2 = partialApplication1 <*> readInt
+```
+
+Note how it takes a function in a context, and removes (?) it from context, removes the argument from the context, applies the function to the argument, puts it back in the context. (this is probably not how it works internally, although I might be wrong.)
+
+And then we apply the ```<*>``` again,
+```
+result :: IO Int
+result = partialApplication2 <*> readInt
+```
+
+Alternatively, we can write:
+```
+result2 = (fmap minOfThree readInt) <*> readInt <*> readInt
+```
+
+
+Based on partial applications, another cool thing we can do with ```<*>``` is
+```
+value = Just (+) <*> (Just 10) <*> (Just 20)
+```
+
+Where value becomes ```Just 30```!
+
+Although Why does this not work: ```value = IO (+) <*> readInt <*> readInt ```
+It throws the error: ```Data constructor not in scope: IO```
+
+#question  How do we do the same with IO?
+
+#question: How is <*> implemented internally?
+

@@ -111,7 +111,7 @@ add = b
 Maybe add = 
 
 
-nope,
+nope.
 -}                                      
 
 
@@ -143,4 +143,65 @@ z2 a b= ( fmap(+) a) <*> b
 
 zmap func a b = ( fmap func a ) <*> b  -- dang.
 
+-- how to implement Applicative <*> for Maybe type:
+mapStar (Just func) (Just a) = Just (func a)
 
+
+-- to create a generic function which re-uses functions 
+-- mapped from regular type and uses them with parameterized types:
+regularFunctionInParameterized :: Applicative f => ( a -> b -> c ) -> f a -> f b -> f c  
+regularFunctionInParameterized binaryfunc p_obj1 p_obj2 = usingApplicative
+    where functionInAContext = fmap binaryfunc p_obj1
+          usingApplicative = functionInAContext <*> p_obj2
+
+
+
+
+{-
+Use the pattern for using binary values in a context for the functions 
+
+(*), div, and mod on these two values:
+
+
+-}
+
+val1 = Just 10
+val2 = Just 5
+
+soln1 = (fmap (*) (Just 10)) <*> (Just 5)
+soln2 = (fmap div val1) <*> val2
+soln3 = (mod <$> val1) <*> val2
+
+-- Multi argument function in IO using <*> and <$>
+minOfThree :: (Ord a) => a -> a -> a -> a
+minOfThree val1 val2 val3 = min val1 (min val2 val3)
+
+
+readInt :: IO Int
+readInt = read <$> getLine 
+
+
+
+minOfThreeIO :: IO Int
+minOfThreeIO = (fmap minOfThree readInt) <*> readInt <*> readInt
+
+
+
+mainX :: IO ()
+mainX = do
+        putStrLn "Enter three numbers"
+        result <- minOfThreeIO
+        putStrLn (show result)
+        
+
+
+-- for haversine we can do 
+test1 = Just haversine <*> (getCoordinatesOfCity "New York") <*> (getCoordinatesOfCity "Arkham")Just 207.3909006336738
+
+-- or, the more sane, beacuase we might not know the context,
+test2 = haversine <$> (getCoordinatesOfCity "New York") <*> (getCoordinatesOfCity "Arkham")
+-- Just 207.3909006336738
+
+
+test3 =  minOfThree <$> (Just 10) <*> (Just 20) <*> (Just 30)
+--Just 10
