@@ -196,7 +196,8 @@ mainX = do
 
 
 -- for haversine we can do 
-test1 = Just haversine <*> (getCoordinatesOfCity "New York") <*> (getCoordinatesOfCity "Arkham")Just 207.3909006336738
+test1 = Just haversine <*> (getCoordinatesOfCity "New York") <*> (getCoordinatesOfCity "Arkham")
+--Just 207.3909006336738
 
 -- or, the more sane, beacuase we might not know the context,
 test2 = haversine <$> (getCoordinatesOfCity "New York") <*> (getCoordinatesOfCity "Arkham")
@@ -205,3 +206,9 @@ test2 = haversine <$> (getCoordinatesOfCity "New York") <*> (getCoordinatesOfCit
 
 test3 =  minOfThree <$> (Just 10) <*> (Just 20) <*> (Just 30)
 --Just 10
+
+
+data User = User {name :: String, id :: Int, score :: Int} deriving (Show)
+
+maybeUser maybeName maybeId maybeScore =
+    User <$> maybeName <*> maybeId <*> maybeScore

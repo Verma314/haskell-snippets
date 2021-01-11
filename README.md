@@ -1686,3 +1686,92 @@ It throws the error: ```Data constructor not in scope: IO```
 
 #question: How is <*> implemented internally?
 
+#question: How do we put a function in an IO context?
+
+
+
+### Applicative and Data in a context
+
+Let us say we want to create a value of a certain type, (e.g. an _'and'_ type which contains some data), but all the data we have is in a context.
+
+Example,
+```
+data User = User {name :: String, id :: Int, score :: Int} deriving (Show)
+```
+
+We know that the data constructor ```User``` works as a function as well. 
+
+User's type, 
+``` 
+>  :t User
+User :: String -> Int -> Int -> User
+```
+It accepts a String, an Int, another Int, and returns a User. Hence, we can use our partial application fmap and ```<*>``` magic we talked about before.
+
+```
+(fmap User (Just "Aditya")) <*> (Just 100) <*> (Just 100)
+```
+
+To make it general:
+```
+maybeUser maybeName maybeId maybeScore = 
+								User <$> maybeName <*> maybeId <*> maybeScore
+```
+
+(How does it work? User fmapped with maybeName:, the function User is applied inside the maybeName, it returns a function in a context.  This function is a context is ```<*>```  with maybeId: the maybeId's value is applied to the function (which needs 2 arguments) and ends up returning another function in a context. In the end, we 'app' it with maybeScore: the maybeScore's value is applied to the function, which returns a User, it is wrapped in a ```Just``` and returned.)
+
+
+To test,
+```
+>  maybeUser (Just "A") (Just 10) (Just 10)
+Just (User {name = "A", id = 10, score = 10})
+```
+
+* Notice that the type signature of the operator <*> is almost the  the same type signature as fmap, except the function argument is also in a context for <*>
+
+```
+fmap  ::  (a -> b) -> f a -> f b
+(<*>) :: f (a -> b) -> f a -> f b
+```
+* The ```pure``` function:
+
+```
+*Main> pure [10] :: Maybe [Int]
+Just [10]
+*Main> pure 10 :: Maybe Int
+Just 10
+*Main> pure 10 :: IO Int
+10
+
+> pure "string" :: Maybe String
+Just "string"
+```
+**Putting functions in the desired context**
+```
+> pure ( + 1 ) <*> (Just 10)
+Just 11
+```
+
+Slightly more complex,
+```
+pure (+) <*> (Just 10) <*> (Just 20)
+Just 30
+```
+
+**Function in an IO Context**
+```
+*Main> pure (minOfThree) <*> (readInt) <*> (readInt) <*> (readInt)
+100
+12
+1
+1
+```
+
+Exactly what we wanted! (note, minOfThree is just a normal Int -> Int -> Int)
+
+
+*  This also works
+```
+hello :: IO String
+hello = pure "Hello World"
+```
