@@ -1733,6 +1733,9 @@ Just (User {name = "A", id = 10, score = 10})
 fmap  ::  (a -> b) -> f a -> f b
 (<*>) :: f (a -> b) -> f a -> f b
 ```
+
+**Putting data in the desired context**
+
 * The ```pure``` function:
 
 ```
@@ -1775,3 +1778,21 @@ Exactly what we wanted! (note, minOfThree is just a normal Int -> Int -> Int)
 hello :: IO String
 hello = pure "Hello World"
 ```
+
+### **Parameterized types - Containers vs Context**
+
+Parameterized types that represent a **container** are ones that represent a data structure.
+
+Parameterized types that convey meaning beyond just the structure are types in a **context**, just like IO Types. Discussed [[03-04 Applicative, IO, and chaining|here]].
+
+
+Looking back, for types in context can have a function in them.
+Example : ```Maybe (+)```,  ```IO func```,
+but might not always make sense to have a function in a container (? not sure)
+
+
+**Note that Maybe, IO are types of applicative. Which makes sense as functions can easily find themselves contained in these, via partial application of fmap.**
+
+
+A ```Data.Map``` or ```(, )```  are not applicatives -- these are functors.
+
