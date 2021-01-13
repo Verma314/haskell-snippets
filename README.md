@@ -1796,3 +1796,20 @@ but might not always make sense to have a function in a container (? not sure)
 
 A ```Data.Map``` or ```(, )```  are not applicatives -- these are functors.
 
+(Any type that is a member of Applicative, could be viewed as a type in a context.)
+
+
+A list is both a context and a container -- it has a structure. 
+
+Lists  represent context: i.e x = [1,2,3] means x can take values 1 or 2 or 3
+
+Using functions in the list context (using applicative), generates all possible values.
+
+Example
+```
+test04 = pure (+) <*> [1,2,3,4,5] <*> [10,20]
+```
+will generate the sums of all possible combinations from the two lists above.
+```
+[11,21,12,22,13,23,14,24,15,25]
+```
