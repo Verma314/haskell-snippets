@@ -1,5 +1,7 @@
 # haskell-snippets
 
+Notes I made, for quick reference and memory, while reading and solving exercises from ```Will Kurt's Get Programming in Haskell```
+
 ## One liners 
 
 * Let and Where are both ways of creating variables. Choosing to use let or where is a matter of style the vast majority of the time in Haskell. 
@@ -1855,8 +1857,8 @@ Instead,
 (((Just 117 >>= getUser) >>= getAddress ) >>=  getStreetName)
 ```
 
-getUser might Would return another Maybe value.
-getAddress while normally might take a string, but has been transformed via ```>>=``` to work on a ```Maybe``` 
+```getUser```  would return another ```Maybe```.
+```getAddress``` while normally might take a string, but has been transformed via ```>>=``` to work on a ```Maybe``` 
 
 Example from GHCI
 ```
@@ -1868,10 +1870,17 @@ result = ((M.lookup 1 mapp) >>= getValFromMapp) >>= getValFromMapp
 -- returns Just 4
 ```
 
-More resources on Monads,
-http://blog.sigfpe.com/2006/08/you-could-have-invented-monads-and.html
+More resources on Monads for fun:
 
+* http://blog.sigfpe.com/2006/08/you-could-have-invented-monads-and.html
 
-IO Inside / IO Simplified
+* https://wiki.haskell.org/What_a_Monad_is_not
+
+* IO Inside / IO Simplified
 https://wiki.haskell.org/IO_inside#I.2FO_in_Haskell.2C_simplified
 
+* Understanding Monads:
+https://web.archive.org/web/20120114225257/http://ertes.de/articles/monads.html
+
+* Monads for OOP
+https://ericlippert.com/2013/02/21/monads-part-one/#more-461
