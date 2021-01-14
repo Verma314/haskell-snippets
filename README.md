@@ -1803,7 +1803,7 @@ A list is both a context and a container -- it has a structure.
 
 Lists  represent context: i.e x = [1,2,3] means x can take values 1 or 2 or 3
 
-Using functions in the list context (using applicative), generates all possible values.
+Using functions in the list context (us`ing applicative), generates all possible values.
 
 Example
 ```
@@ -1813,3 +1813,65 @@ will generate the sums of all possible combinations from the two lists above.
 ```
 [11,21,12,22,13,23,14,24,15,25]
 ```
+
+## Monads
+
+* A monad is used when we wanna chain together functions. 
+
+* It is a type class with the kind ```(m :: * -> *) ```
+
+* For a type to be a monad, it must implement the function ```bind```
+
+```
+ (>>=) :: m a -> (a -> m b) -> m b
+```
+
+* Note how it takes two arguments. One, a parameterized type. Two, a function which takes in a "regular" type and returns a parameterized type. 
+
+The function bind applies the function after "unwrapping" the parameterized type argument, and returns a parameterized type.
+
+* Because it returns a parameterized type, you can chain it using another bind ```>>=```, by chaining it with another function  that accepts a normal type but returns a parameterized type.
+
+* This is especially useful to chain ```Map.loopup```
+
+* ```Map.lookup``` accepts a key (and a map) and returns a maybe
+``` k -> Maybe a ```
+
+* Example (from Stackoverflow: https://stackoverflow.com/questions/44965/what-is-a-monad)
+
+Take an example of straightforward chaining
+
+```
+streetName = getStreetName (getAddress (getUser 17)) 
+```
+
+What if one of these methods returns a ```Nothing```?
+We would have to write conditional checks over and over again.
+
+
+Instead,
+
+```
+(((Just 117 >>= getUser) >>= getAddress ) >>=  getStreetName)
+```
+
+getUser might Would return another Maybe value.
+getAddress while normally might take a string, but has been transformed via ```>>=``` to work on a ```Maybe``` 
+
+Example from GHCI
+```
+mapp =  M.fromList [ (1,2),(2,3),(3,4),(4,5)]
+
+getValFromMapp val = M.lookup val mapp
+
+result = ((M.lookup 1 mapp) >>= getValFromMapp) >>= getValFromMapp  
+-- returns Just 4
+```
+
+More resources on Monads,
+http://blog.sigfpe.com/2006/08/you-could-have-invented-monads-and.html
+
+
+IO Inside / IO Simplified
+https://wiki.haskell.org/IO_inside#I.2FO_in_Haskell.2C_simplified
+
