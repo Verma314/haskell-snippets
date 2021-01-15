@@ -1884,3 +1884,37 @@ https://web.archive.org/web/20120114225257/http://ertes.de/articles/monads.html
 
 * Monads for OOP
 https://ericlippert.com/2013/02/21/monads-part-one/#more-461
+
+
+* Alternate way to look at Monad's ```>>=``` function: 
+
+This ```>>=``` bind function,
+
+it pipes,
+
+on the left hand side is always some data in a context, 
+
+to the right side of ```>>=``` is a function that takes the type (without context),
+and operates on the value and returns it in context.
+
+
+* Example, to write an IO action which prompts the user, gets an input, and prints it out:
+
+
+```
+nameStatementIO2 :: IO ()
+nameStatementIO2 = askForName >> 
+				getLine >>= (\ n -> return (nameStatement n)  >>= putStrLn
+```
+
+You see, ```>>``` is used as it ignores everything on the left.
+
+ - ```getLine``` obviously returns an ```IO String```
+- the result is piped to a lambda which calls ```nameStatement``` wrapped as an IO
+-  the ```>>=``` operates the lambda on the string wrapped inside the ```IO String```. and returns the results as an IO String,
+-  The result is ```bind``` (or piped) to a  ```putStrLn``` which acts on the ```IO String```'s string, and returns an ```IO String```
+
+
+### Do notation
+
+ ```Do``` notation is syntactic sugar for ```>>```, ```>>=``` and ```(\x -> return (func x))``
