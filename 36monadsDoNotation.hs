@@ -1,3 +1,4 @@
+import qualified Data.Map as Map
 -- do notation
 
 -- revision,
@@ -189,3 +190,51 @@ readGrade2 = do
 readGrade3 :: IO Grade
 readGrade3 = putStrLn "enter grade " >> getLine >>= ( return . read )
 
+
+--- talking about code reuse, let us do some computations,
+-- if the candidate is wrapped in a Maybe
+
+
+-- Step 1 Creating a Data.Map
+
+candidate1 :: Candidate
+candidate1 = Candidate { candidateId = 1
+                       , codeReview = A
+                       , cultureFit = A
+                       , education = BA }
+
+candidate2 :: Candidate
+candidate2 = Candidate { candidateId = 2
+                       , codeReview = C
+                       , cultureFit = A
+                       , education = PhD }
+
+candidate3 :: Candidate
+candidate3 = Candidate { candidateId = 3
+                       , codeReview = A
+                       , cultureFit = B
+                       , education = MS }
+
+
+candidateDB :: Map.Map Int Candidate
+candidateDB = Map.fromList ( zip [1,2,3] [candidate1,candidate2,candidate3] )
+
+assessCandidateMaybe2 :: Int -> Maybe String
+assessCandidateMaybe id = do
+    candidate <- Map.lookup id candidateDB -- <- is used because we wanna use it "normally"
+    let assessment = viable candidate
+    let statement = if (assessment) then "passed"
+                    else "failed"
+    return statement
+
+
+assessCandidateMaybe2 :: Int -> Maybe String
+assessCandidateMaybe2 id =
+    (Map.lookup id candidateDB) >>= 
+    ( return . viable ) >>= 
+    ( \ x -> if (x) then return  "passed" else return "failed")
+    
+
+
+
+-- todo: processing candidates in the context of a list
