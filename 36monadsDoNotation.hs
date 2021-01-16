@@ -10,6 +10,7 @@ askForName = putStrLn "What is your name?"
 nameStatement :: String -> String
 nameStatement name = "Hello, " ++ name ++ "!"
 
+-- harder to read: 
 nameStatementIO :: IO String
 nameStatementIO = (>>=) (askForName >> getLine) customLam
     where customLam = (\name -> return (nameStatement name) )
@@ -219,7 +220,7 @@ candidate3 = Candidate { candidateId = 3
 candidateDB :: Map.Map Int Candidate
 candidateDB = Map.fromList ( zip [1,2,3] [candidate1,candidate2,candidate3] )
 
-assessCandidateMaybe2 :: Int -> Maybe String
+assessCandidateMaybe :: Int -> Maybe String
 assessCandidateMaybe id = do
     candidate <- Map.lookup id candidateDB -- <- is used because we wanna use it "normally"
     let assessment = viable candidate
@@ -228,8 +229,8 @@ assessCandidateMaybe id = do
     return statement
 
 
-assessCandidateMaybe2 :: Int -> Maybe String
-assessCandidateMaybe2 id =
+assessCandidateMaybe3 :: Int -> Maybe String
+assessCandidateMaybe3 id =
     (Map.lookup id candidateDB) >>= 
     ( return . viable ) >>= 
     ( \ x -> if (x) then return  "passed" else return "failed")
@@ -238,3 +239,75 @@ assessCandidateMaybe2 id =
 
 
 -- todo: processing candidates in the context of a list
+candidates :: [Candidate]
+candidates = [candidate1
+             ,candidate2
+             ,candidate3]
+
+assessCandidateList :: [Candidate] -> [String]
+assessCandidateList candidates = candidates >>= (return . viable ) >>= (return . show )
+                        
+
+-- <- is actually takes the element out of the context basically
+assessCandidateList2 :: [Candidate] -> [String]
+assessCandidateList2 candidates = do
+                                 candidate <- candidates
+                                 let passed = viable candidate
+                                 let statement = if passed then "passed" else "failed"
+                                 return statement
+{-
+In DO notaation,
+
+<- takes an element out of the context.
+
+after which you can do operations on the indivial element -- using let expressions,
+these let expressions you can also return an element,
+it will put all these elements back in the context and return the value
+-}
+
+
+-- some experiments to learn do notation:
+
+assessCandidateListExperiment candidates = do
+                                 candidate <- candidates
+                                 let passed = viable candidate                            
+                                 return passed
+
+
+randomDoExperiment = do
+                     unwrappedInput <- getLine
+                     let value = (read unwrappedInput)  * 2
+                     return value                            
+
+randomDoExperiment2 = do
+                     unwrappedInput <- getLine
+                     let value = (read unwrappedInput)  * 2
+                     let moreValue = value * 2
+                     return moreValue
+                     
+
+randomDoListExperiment myList = do
+                        element <- myList
+                        let myFiler = if (mod element 2 == 0 ) then element
+                                      else  (element + 1)
+                        let multiplier = (myFiler * 200) + 1
+                        return multiplier 
+
+--------------------
+-- write a truly generic function to access candidate
+-- one which can take any monad
+assessCandidateX :: (Monad m) => m Candidate -> m String 
+assessCandidateX candidateInContext = do
+                                      candidate <- candidateInContext
+                                      let isPassed = if (viable candidate) then "passed"
+                                                     else "fail"
+                                      return isPassed
+
+-- the above function will work on all sorts of types in a context
+
+test1 = assessCandidateX readCandidate
+test2 = assessCandidateX (Just candidate1)
+test3 = assessCandidateX [candidate1,candidate2]
+
+
+

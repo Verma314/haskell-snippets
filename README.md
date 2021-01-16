@@ -1922,4 +1922,34 @@ You see, ```>>``` is used as it ignores everything on the left.
 
 * Monads are a great tool for code reuse.
 
-* 
+* In DO notaation
+
+```<-``` takes an individual element out of the context.
+
+after which you can do operations on the indivial element -- using let expressions,
+
+these let expressions you can also return an element,
+it will put all these elements back in the context and return the value
+
+Example,
+```
+-- <- is actually takes the element out of the context basically
+assessCandidateList2 :: [Candidate] -> [String]
+assessCandidateList2 candidates = do
+                                 candidate <- candidates
+                                 let passed = viable candidate
+                                 let statement = if passed then "passed" else "failed"
+                                 return statement
+```
+
+
+* A truly generic function to access candidate, one which can take any monad
+```
+assessCandidateX :: (Monad m) => m Candidate -> m String 
+assessCandidateX candidateInContext = do
+                                      candidate <- candidateInContext
+                                      let isPassed = if (viable candidate) then "passed"
+                                                     else "fail"
+                                      return isPassed
+```
+See file 36monadsDoNotation.hs for examples.
