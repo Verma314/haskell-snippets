@@ -1953,3 +1953,25 @@ assessCandidateX candidateInContext = do
                                       return isPassed
 ```
 See file 36monadsDoNotation.hs for examples.
+
+
+* todo: talk more about list comprehension. cover guard function.
+
+* todo:
+
+write a post,
+how are list comprehensions a type of monad function?
+
+how are list comprehension implemented?
+
+they are a syntactic sugar for do notation.
+which is a syntactic sugar in itself for monad's bind (>>=) function,
+which helps us in chaining.
+
+The type signature for bind is:
+
+bind:: functionWhichTakesinANormalElementButReturnsAnElementInAContext -> anElementInContext -> anElementInContext
+
+or,
+
+bind :: (Monad m) => (a -> m b) -> m a -> m b 

@@ -1,3 +1,4 @@
+import Data.Char
 -- revision
 readInt :: IO Int
 readInt = read <$> getLine
@@ -39,4 +40,52 @@ powersOfBoth2and3 n = do
                     let powerOf3 = element ^ 3
                     return (powerOf2,powerOf3)                       
 
--- to do:  guard functions
+-- to do:  guard function
+
+
+-- new stntax for list comprehension:
+-- squares
+squares = [ x ^ 2 | x <- [1..10] ]
+
+squares2 = [ y ^ 2 | x <- [1..10], let y = x + 11 ]
+
+--powersOf2and3Alt:
+powersOf2and3Alt :: Int -> [(Int,Int)]
+powersOf2and3Alt n = [ (powerOf2,powerOf3) | element <- [1..n] , let powerOf2 = element ^ 2,
+                                                                    let powerOf3 = element ^ 3  ]
+
+
+
+--- exercises:
+-- Write a list comprehension that takes the following words
+
+-- ["brown","blue","pink","orange"]
+-- and capitalizes the first letter, and prepends Mr. in front.                                                                    
+
+myElements = ["brown","blue","pink","orange"]
+
+stringOps names = [ "Mr " ++ newName | element <- names, 
+                            let newName =  (Data.Char.toUpper (head element)) : (tail element)]
+
+
+{-
+todo:
+
+write a post,
+how are list comprehensions a type of monad function?
+
+how are list comprehension implemented?
+
+they are a syntactic sugar for do notation.
+which is a syntactic sugar in itself for monad's bind (>>=) function,
+which helps us in chaining.
+
+The type signature for bind is:
+
+bind:: functionWhichTakesinANormalElementButReturnsAnElementInAContext -> anElementInContext -> anElementInContext
+
+or,
+
+bind :: (Monad m) => (a -> m b) -> m a -> m b 
+
+-}
