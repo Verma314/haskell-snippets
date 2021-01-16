@@ -1918,3 +1918,8 @@ You see, ```>>``` is used as it ignores everything on the left.
 ### Do notation
 
  ```Do``` notation is syntactic sugar for ```>>```, ```>>=``` and ```(\x -> return (func x))``
+
+
+* Monads are a great tool for code reuse.
+
+* 
