@@ -1986,3 +1986,6 @@ Look at bind's type signature ``` Monad m => m a -> (a -> m b) -> m b```
 it takes a value in a conext; and takes a function which accepts individual elements from inside the context, applies this function of the element(s) in the first argument (that are inside the context), and returns the values put back into the context.
 
 List comprehension is the exact same thing, list is a monad, we pass it to the list comprehension, the function acts on the individual elements inside the list, and returns their transformed version inside the list itself.
+
+
+-- todo: how to combine these  _select, _join, _where functions

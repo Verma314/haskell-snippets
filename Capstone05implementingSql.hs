@@ -64,3 +64,61 @@ test05 = _where even
 -----------------------
 -----------------------
 -- creating more data before implementing join                 
+
+-- create a typeclass Teacher,
+data Teacher = Teacher
+ { teacherId :: Int
+ , teacherName :: Name } deriving Show
+
+-- create a "table" for infomration on teachers
+teachers :: [Teacher]
+teachers = [Teacher 100 (Name "Simone" "De Beauvior")
+           ,Teacher 200 (Name "Susan" "Sontag")]
+
+
+
+-- create another type called Course, which contains info about what teacher teaches which course
+data Course = Course
+ { courseId :: Int
+ , courseTitle :: String
+ , teacher :: Int } deriving Show
+
+-- let us create a "table" for courses
+
+courses :: [Course]
+courses = [Course 101 "French" 100
+          ,Course 201 "English" 200]
+
+-- french has teacher value 100, i.e Simon de Beauvior teaches frecnh 
+
+{- for _join, we’ll be checking to see whether a given property of 
+    data in one list is equal to another property in another list.
+
+the type signature will be:
+
+_join :: [a] -> [b] -> (a->c) -> (b -> c) -> [(a,b)]
+
+-}
+
+cartesianProd a b = [ (ele1,ele2) |  ele1 <- a, ele2 <-b]
+
+_join :: Eq c => [a] -> [b] -> (a -> c) -> (b -> c) -> [(a,b)]
+_join list1 list2 property1 property2 = do
+                                        cartElement <- cartesianProd list1 list2
+                                        let firstElement = fst cartElement
+                                        let secondElement = snd cartElement
+                                        guard( property1 firstElement == property2 secondElement )
+                                        return cartElement
+
+
+-- see how you don't need an extra cartesianProd function, you can do that in your do block itself.
+-- example,
+_join2 list1 list2 property1 property2 = do
+                                         ele1 <- list1
+                                         ele2 <- list2
+                                         guard ( property1 ele1 == property2 ele2)
+                                         return (ele1,ele2,"end")
+
+
+
+-- todo: how to combine these  _select, _join, _where functions
