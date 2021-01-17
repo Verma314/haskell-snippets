@@ -89,3 +89,26 @@ or,
 bind :: (Monad m) => (a -> m b) -> m a -> m b 
 
 -}
+
+
+{-Use a list comprehension 
+that generates a list of correct calendar dates, 
+given that you know the number of days in each month. 
+For example, 
+it should start with 1 .. 31 for January 
+and be followed by 1 .. 28 for February.-}
+
+
+monthEnds :: [Int]
+monthEnds = [31,28,31,30,31,30,31,31,30,31,30,31]
+
+generateDates monthEnds = [ days | end <-  monthEnds, let days = [1..end] ]
+
+-- Translate the preceding question into do-notation, and then into Monad methods and lambdas.
+generateDatesDo monthEnds = do
+                            end <- monthEnds
+                            let days = [1..end]
+                            return days
+
+-- monad methods                            
+generateDatesMonads monthEnds = monthEnds >>= (\ x -> return [1..x])

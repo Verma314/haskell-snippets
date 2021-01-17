@@ -1957,10 +1957,7 @@ See file 36monadsDoNotation.hs for examples.
 
 * todo: talk more about list comprehension. cover guard function.
 
-* todo:
-
-write a post,
-how are list comprehensions a type of monad function?
+*  how are list comprehensions a type of monad function?
 
 how are list comprehension implemented?
 
@@ -1975,3 +1972,17 @@ bind:: functionWhichTakesinANormalElementButReturnsAnElementInAContext -> anElem
 or,
 
 bind :: (Monad m) => (a -> m b) -> m a -> m b 
+
+
+List comprehensions are a syntactic sugar for [[05-02 Do notation|Do notation]], 
+The do notation is a syntactic sugar in itself for monad's bind (>>=) function, (>>) function, and returns.
+
+These tools help us in chaining.
+
+**Why is list comprehension same as Monad's bind?**
+
+Look at bind's type signature ``` Monad m => m a -> (a -> m b) -> m b```
+
+it takes a value in a conext; and takes a function which accepts individual elements from inside the context, applies this function of the element(s) in the first argument (that are inside the context), and returns the values put back into the context.
+
+List comprehension is the exact same thing, list is a monad, we pass it to the list comprehension, the function acts on the individual elements inside the list, and returns their transformed version inside the list itself.
