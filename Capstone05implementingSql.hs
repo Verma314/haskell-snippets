@@ -122,3 +122,60 @@ _join2 list1 list2 property1 property2 = do
 
 
 -- todo: how to combine these  _select, _join, _where functions
+
+-- find (teachers,courses) where teacherId == teacher
+joinData = (_join teachers courses teacherId teacher)    
+
+-- let us get some data from the above result now:
+whereResult = _where ((== "English") . courseTitle . snd) joinData
+-- snd gets the "Course" from the (teachers,courses) result,
+-- courseTtitle is getting the couseTitle, == English is filtering for 
+-- courses which are engligh
+-- so we end up getting all the (Teacher,Course) pairs where the course is english
+
+
+-- now we are getting a whole list of (---, ----)  tups as result, 
+-- how to "_select" the right values,
+selectResult = _select (teacherName . fst) whereResult
+-- selecting the teacherName from the fst 
+
+
+
+---------------------------------
+---------------------------------
+-- How to restructure the above staments to make it look more like an sql?
+-- we use lambdas.
+
+-- how:
+
+-- from the book's author (W. Kurt)
+-- we create a common interface: 
+--  "_hinq" that will take the _select,_join, and _where queries 
+-- in the order you expect and then use lambdas behind the scenes 
+-- to restructure everything.
+
+_hinq selectQuery joinQuery whereQuery = (\ joinData -> 
+                                                    (\whereResult -> selectQuery whereResult) (whereQuery joinData)
+                                            ) joinQuery
+-- kinda tedious ^
+-- let us re-write it,
+-- join "creates" the initial list of tuples, so we create that first,
+-- also, join data does not depend on other queries, so joinData == joinQuery
+
+-- next, where "acts" on the result from join
+-- at last, the "select" query acts on the "whereData"
+_hinq2 selectQuery joinQuery whereQuery = selectData
+    where joinData = joinQuery
+          whereData = whereQuery joinData
+          selectData = selectQuery whereData
+-- much mroe beautiful and readable, I think!
+
+
+-- Example to test this out:
+finalResult :: [Name]
+finalResult = _hinq2 (_select (teacherName . fst))                    
+                    (_join teachers courses teacherId teacher)                    
+                    (_where ((== "English") .courseTitle . snd))
+
+
+
