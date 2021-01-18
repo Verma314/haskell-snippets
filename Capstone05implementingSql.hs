@@ -177,5 +177,14 @@ finalResult = _hinq2 (_select (teacherName . fst))
                     (_join teachers courses teacherId teacher)                    
                     (_where ((== "English") .courseTitle . snd))
 
+-- not filtering anything:, put a generic conditional, which will return true for everything
+finalResult2 :: [Name]
+finalResult2 = _hinq2 (_select (teacherName . fst))                    
+                    (_join teachers courses teacherId teacher)                    
+                    (_where ((\ _ -> True ) .courseTitle . snd))
+
+
+-- can we re-design _hinq so that we can omit where statment?
+-- the book says, "You’ll use a HINQ type that will have two constructors."
 
 
