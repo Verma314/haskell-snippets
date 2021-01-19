@@ -1988,4 +1988,3 @@ it takes a value in a conext; and takes a function which accepts individual elem
 List comprehension is the exact same thing, list is a monad, we pass it to the list comprehension, the function acts on the individual elements inside the list, and returns their transformed version inside the list itself.
 
 
--- todo: how to combine these  _select, _join, _where functions

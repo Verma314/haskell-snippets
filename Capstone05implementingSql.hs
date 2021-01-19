@@ -141,6 +141,12 @@ selectResult = _select (teacherName . fst) whereResult
 -- selecting the teacherName from the fst 
 
 
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+-- COMBINING THESE SELECT, FROM, WHERE :
+
+
 
 ---------------------------------
 ---------------------------------
@@ -172,17 +178,33 @@ _hinq2 selectQuery joinQuery whereQuery = selectData
 -- much mroe beautiful and readable, I think!
 
 
+
+-- COMBINING THEM: EXAMPLE
+
 -- Example to test this out:
 finalResult :: [Name]
 finalResult = _hinq2 (_select (teacherName . fst))                    
                     (_join teachers courses teacherId teacher)                    
                     (_where ((== "English") .courseTitle . snd))
 
+
+
+
+
 -- not filtering anything:, put a generic conditional, which will return true for everything
 finalResult2 :: [Name]
 finalResult2 = _hinq2 (_select (teacherName . fst))                    
                     (_join teachers courses teacherId teacher)                    
                     (_where ((\ _ -> True ) .courseTitle . snd))
+
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
 
 
 -- can we re-design _hinq so that we can omit where statment?
