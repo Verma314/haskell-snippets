@@ -1,4 +1,5 @@
 import Control.Monad
+import Control.Applicative -- for the guard function, and the Alternative
 -- Capstone
 
 -- modelling our tables,
@@ -188,3 +189,94 @@ finalResult2 = _hinq2 (_select (teacherName . fst))
 -- the book says, "You’ll use a HINQ type that will have two constructors."
 
 
+-- we will need to re-write _select, _where and _join to work with monads
+-- although we use the guard() which works on the Alternative type class
+-- hence we need to re-write the type signature to indicate that.
+-- (currently we have written these functions for lists, the guard function 
+-- works, because List and Maybe are already types of Alternative)
+
+_select3 :: Monad m => (a -> b) -> m a -> m b
+_select3 func table = do
+                    element <- table
+                    return (func element)
+
+_where3 :: (Monad m, Alternative m) => (a -> Bool) -> m a  -> m a
+_where3 _filter table = do 
+                       element <- table
+                       guard (_filter element)              
+                       return element
+
+_join3 :: (Monad m, Alternative m, Eq c) => m a -> m b -> (a -> c) -> (b -> c) -> m (a,b) 
+_join3 list1 list2 property1 property2 = do
+                                         ele1 <- list1
+                                         ele2 <- list2
+                                         guard ( property1 ele1 == property2 ele2)
+                                         return ( ele1,ele2)
+
+{-
+----- fyi:
+:t _select3 (teacherName . fst)
+_select3 (teacherName . fst) :: Monad m => m (Teacher, b) -> m Name
+
+hence the type for the select, it takes a monad, and returns one,
+
+
+> :t  _join3 teachers courses teacherId teacher
+_join3 teachers courses teacherId teacher :: [(Teacher, Course)]
+
+_join is bunch of stuff inside a monad
+--------
+-}
+
+
+-- let us create a common interface to beautify the queries ie make them readable
+data HINQ m a b =   HINQ (m a -> m b ) (m a) (m a -> m a)
+                    | HINQ_ (m a -> m b ) (m a) 
+
+
+-- why the HINQ m a b  typeclass?
+-- what is it? 
+{-
+It is an 'or' type class, that can either be 
+HINQ (m a -> m b ) (m a) (m a -> m a)     or     HINQ_ (m a -> m b ) (m a) 
+
+the kind of  (* -> *) -> * -> * -> *
+the first type it takes is a monad (* -> *),
+them a ranadom type a, and then another random type b
+
+for its data constructors we have HINQ and HINQ_
+that accept three types: 
+1. one: the return value of a _select (partial) function.  it takes in a table and returns one ( m a -> m b ). a monad transformation
+2. two: a join. just has a bunch of returned data in a monad
+3. a where : filters the things inside a monad (m a -> ma) 
+
+
+We use this type class to be like a container type class for queries:
+
+like this one:
+HINQ (_select3 (teacherName . fst))
+               (_join3 teachers courses teacherId teacher)
+               (_where3 ((== "English") . courseTitle . snd))   
+
+--
+having a container is not enough,
+
+we will now, define a new method runHINQ, that takes in these HINQ containers,
+and via pattern matching executes them, using the _hinq function/common interface we had defined before.
+
+-}
+
+-- common interface,
+runHINQ :: (Monad m, Alternative m) => HINQ m a b -> m b
+runHINQ (HINQ sClause jClause wClause) = _hinq sClause jClause wClause
+runHINQ (HINQ_ sClause jClause) = _hinq sClause jClause
+                                                (_where3 (\_ -> True))
+
+-- creating the query via the type class HINQ
+query1 :: HINQ [] (Teacher, Course) Name
+query1  = HINQ (_select3 (teacherName . fst))
+               (_join3 teachers courses teacherId teacher)
+               (_where3 ((== "English") . courseTitle . snd))                                                
+
+-- this ^  is just a ```HINQ m a b ``` type, we need to give this query to runHINQ (which can actually exeucte it)
+queryExecute = runHINQ query1
