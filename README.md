@@ -1988,3 +1988,33 @@ it takes a value in a conext; and takes a function which accepts individual elem
 List comprehension is the exact same thing, list is a monad, we pass it to the list comprehension, the function acts on the individual elements inside the list, and returns their transformed version inside the list itself.
 
 
+## Organizing Haskell Code
+
+#### in the folder "38modules:
+1 the main function gets it's own module Main -- the IO action is handled here
+2 Pallindrome logic get it's own module Palindrome.
+
+
+General Ideas,
+
+- we’d like to keep the main IO action in a separate file from the rest of the business logic. The main module should primarily be concerned with the execution of the program. Logic in a separate file, such as ```Logic.hs```
+- Logic gets it's own module/file.
+- When you don’t explicitly tell Haskell that you’re in a module, Haskell assumes that you’re the Main module
+- we can make this explicit by using the following line at the top of your file          ```module Main where```
+- What do we do if we create a function or value that conflicts with one of the functions already defined in Prelude? We specify the module when using the function with the conflicted name, example                                                                               ```doubleLength = Main.length * 2```
+- We can also hide functions inside a module, just like private methods. These methods won't be visible to the outside world.
+- Example, ```module Palindrome(isPalindrome) where``` means that Palindrome module exports only the ```isPallindrome``` function.
+
+- You can also selectively import functions too. 
+- Importing ```import Data.Char (toLower,isSpace,isPunctuation)```, means that we are only importing these three functions from the ```Data.Char``` module.
+
+- Each Haskell program has a main function, sometimes implicitly created. 
+
+- To import the logic module into your main use:
+    ```import qualified LogicModule```
+- And then just compile the main, which will include the other imported modules.
+- This is for trivial builds. For more complex ones, we use "stack"
+
+
+
+
