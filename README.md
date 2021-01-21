@@ -1991,8 +1991,8 @@ List comprehension is the exact same thing, list is a monad, we pass it to the l
 ## Organizing Haskell Code
 
 #### in the folder "38modules:
-1 the main function gets it's own module Main -- the IO action is handled here
-2 Pallindrome logic get it's own module Palindrome.
+* the main function gets it's own module Main -- the IO action is handled here
+* Pallindrome logic get it's own module Palindrome.
 
 
 General Ideas,
@@ -2016,5 +2016,7 @@ General Ideas,
 - This is for trivial builds. For more complex ones, we use "stack"
 
 
+## Building using Stack
 
+* 
 
