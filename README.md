@@ -2043,4 +2043,37 @@ exposed-modules:    Lib,
 
 
 
+### Organize the project 
 
+* Re-write Lib.hs and put all our business logic in it. Export the relevant functions.
+
+* Re-write main, so that it calls the Lib module.
+
+* Modify the cabal file.
+
+ "You have to tell stack about any modules you’re depending on. For both your Main.hs file and your Lib.hs file, you’re using Data.Text
+ 
+ For both your library and executable sections of palindrome-checker.cabal, you need to add the text package to the list of dependencies:
+
+ ```
+ library
+  hs-source-dirs:      src
+  exposed-modules:     Lib
+  build-depends:       base >= 4.7 && < 5
+                     , text
+
+executable palindrone-checker-exe
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , palindrone-checker
+                     , text                     
+.
+.
+.
+```
+
+Note how the pallindrome-checker-exe, i.e. the main/executable depends on "palindrone-checker", what does that mean here?
+
+* And now we are set to build the project!
