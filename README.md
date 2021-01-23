@@ -2076,4 +2076,27 @@ executable palindrone-checker-exe
 
 Note how the pallindrome-checker-exe, i.e. the main/executable depends on "palindrone-checker", what does that mean here?
 
+there is no module called "palindrone-checker". Or is there?
+
 * And now we are set to build the project!
+
+* Note, in the cabal file, under exposed modules, you are writing down ```Lib```,
+the name of our module with the business logic is ```Lib```, gotta list them here so that Main can import them.
+
+We would have to replace ```Lib``` in the cabal file, if the module in our ```src``` was called something else.
+
+
+
+## Building and running the project
+
+- After making changes to the cabal file, modifying the code etc, Execute: 							```stack setup``` in the directory. This uses a resolver to install a version of ghc that was used when one wrote the project. 
+- The resolver is set in stack.yaml, usually ```lts-7.9``` 
+-  To build the project we use ```stack build```
+-  For stack, to run the program, we use the ```exec``` command and pass the name of the executable (which is defined in the \*.cabal file). Example 								```executable palindrone-checker-exe```
+
+
+Stack feature to avoid having to re-write language pragmas in each module:
+- in both the library and executable sections of the \*.cabal file. Below, the 
+  ```default-language	: Haskell2010```, add the language extension, for example,
+`` extensions: OverloadedStrings```
+
