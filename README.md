@@ -2092,7 +2092,7 @@ We would have to replace ```Lib``` in the cabal file, if the module in our ```sr
 - After making changes to the cabal file, modifying the code etc, Execute: 							```stack setup``` in the directory. This uses a resolver to install a version of ghc that was used when one wrote the project. 
 - The resolver is set in stack.yaml, usually ```lts-7.9``` 
 -  To build the project we use ```stack build```
--  For stack, to run the program, we use the ```exec``` command and pass the name of the executable (which is defined in the \*.cabal file). Example 								```executable palindrone-checker-exe```
+-  For stack, to run the program, we use the ```exec``` command and pass the name of the executable (which is defined in the \*.cabal file). Example 								```stack exec palindrone-checker-exe```
 
 
 Stack feature to avoid having to re-write language pragmas in each module:
@@ -2100,3 +2100,125 @@ Stack feature to avoid having to re-write language pragmas in each module:
   ```default-language	: Haskell2010```, add the language extension, for example,
 `` extensions: OverloadedStrings```
 
+
+
+**To force stack  to use system GHC, instead of downloading an isolated GHC:**
+
+```
+stack config set system-ghc --global true
+```
+
+
+## Testing Haskell Projects
+
+We discuss three types of testing.
+
+### 1. Opening our entire project in GHCi
+
+We wanna load our project into GHCi, so that we can manually run our functions in the CLI. 
+
+For that, we need to first execute ```stack setup```, and ```stack build```, after which we can do a ```stack ghci```.  From which you'll be able to interact with the project's functions in ghci.
+
+This is for manual testing
+
+### 2. Unit Testing our methods
+
+
+Implement your unit tests in ```/test/Spec.hs```, such as using ```asserts```, and then execute,
+```stack test```.
+
+The tests can look something like this,
+```
+main :: IO ()
+main = do
+  putStrLn "Running tests..."
+  assert (isPalindrome "madam") "passed 'madam'" "FAIL: 'madam'"
+  assert (isPalindrome "aditya") "passed 'aditya'" "FAIL: 'raadityacecar'"
+  assert (isPalindrome "racecar!") "passed 'racecar!'" "FAIL: 'racecar!'"
+  assert ((not . isPalindrome) "random") "passed 'random'" "FAIL: 'random'"
+  putStrLn "done!"
+```
+
+On executing ```stack test```,  it runs these tests,
+```
+Running tests...
+passed 'madam'
+FAIL: 'raadityacecar'
+FAIL: 'racecar!'
+passed 'random'
+done!
+```
+Looking at these results, you can continue to modify the logic in Lib (adding to it, example: making sure that "racecar!'' passes as palindrome.)
+
+
+### 3. Automating Unit Tests / Generating Data for Unit Tests / Testing Properties of Functions (extremely cool)
+
+Unit testing is a way to automate manual testing of the code.
+Property testing is a way to automate unit tests. 
+
+We wanna test if the function has a certain property.
+
+To do that we use Quickcheck.
+
+We supply QuickCheck with a some properties that our function is supposed to uphold.
+QuickCheck automatically generates values, and tests them out on the functions --- making sure that the functions uphold the properties.
+
+Example,
+
+for a function ```isPallindrome```, the following property must always hold true. Running ```isPallindrome``` on ```text```, should return the same value as running it on ```reverse (test)```.
+
+So we formalize this property:
+```
+prop_reverseInvariant text = isPalindrome text == (isPalindrome (reverse text))
+```
+It takes a text, and runs ```isPallindrome``` on both the text and its reverse value.
+
+See how this function is testing a fundamental property of isPallindrome. It's quite beautiful.
+
+Now we give this function (property) to quick check, which can generate 1000s of test cases for us, and call test this property on all of these test cases.
+
+
+Running it on 1000 test cases:
+```
+main :: IO ()
+main = do
+	   quickCheckWith stdArgs { maxSuccess = 1000}  prop_reverseInvariant
+```
+
+
+--
+
+Another property that the ```isPallindrome``` function must uphold: calling this function on a string with punctuation marks must give the same result as calling it on a string without those punctuation marks. That is, it should be punctuation invariant,
+
+property is implement as:
+```
+prop_punctuationInvariant2 text = isPalindrome text == isPalindrome noPuncText
+    where noPuncText = filter (not . isPunctuation) text
+```
+
+Why is this so cool? Because if we have not handles punctuation invariance properly in our code, QuickCheck would find out, by having tested this property on 1000s of values.
+
+
+```
+
+main :: IO ()
+main = do 
+    quickCheck prop_punctuationInvariant2
+    putStrLn "done!"
+```
+
+
+My thoughts:
+
+these properties on functions are able to capture deep behavior of our functions. And can help us "prove"  these methods flawlessly. I think this can certainly tie to Coq, or Automated Theorem Provers. 
+
+Maybe this has implications on formal verification of code too! 
+
+(todo: Look up property testing, and what else can be done using it. Find out how formal verification works.)
+
+---
+
+*Notes on using QuickCheck*
+
+- QuickCheck might not be able to create values of all types. The type it targets must be an  ```Arbitrary```
+- To resolve this one can install ```stack install quickcheck-instances```, to make QuickCheck work with a variety of types. 
