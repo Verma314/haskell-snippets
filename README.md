@@ -2216,6 +2216,7 @@ Maybe this has implications on formal verification of code too!
 
 (todo: Look up property testing, and what else can be done using it. Find out how formal verification works.)
 
+I loved this chapter quite a lot. And for property testing, my mind is blown.
 ---
 
 *Notes on using QuickCheck*
