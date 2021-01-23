@@ -2213,10 +2213,11 @@ My thoughts:
 these properties on functions are able to capture deep behavior of our functions. And can help us "prove"  these methods flawlessly. I think this can certainly tie to Coq, or Automated Theorem Provers. 
 
 Maybe this has implications on formal verification of code too! 
+I loved this chapter quite a lot. And for property testing, my mind is blown.
+
 
 (todo: Look up property testing, and what else can be done using it. Find out how formal verification works.)
 
-I loved this chapter quite a lot. And for property testing, my mind is blown.
 ---
 
 *Notes on using QuickCheck*
