@@ -126,7 +126,7 @@ Or, "objects" here are just data members which have this extra functionality to 
 * In Haskell, new "objects" are created by modifying copies of old, existing ones.
 
 
-#### How to generate Primes (and an example of Guard notation)
+### How to generate Primes (and an example of Guard notation)
 ```
 isPrime :: Int -> Maybe Bool
 isPrime n   | n < 0 = Nothing
