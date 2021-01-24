@@ -125,6 +125,26 @@ Or, "objects" here are just data members which have this extra functionality to 
 
 * In Haskell, new "objects" are created by modifying copies of old, existing ones.
 
+
+* Guard notation,
+```
+isPrime :: Int -> Maybe Bool
+isPrime n   | n < 0 = Nothing
+            | n > (length primes) = Nothing
+            | otherwise = Just ( n `elem` primes)
+
+-- where:            
+primes :: [Int]
+primes = sieve [2..10000]
+
+
+sieve :: [Int] -> [Int]
+sieve [] = [] 
+sieve (firstElement : rest ) = firstElement : sieve ( filteredRest )
+    where filteredRest = filter (not . (== 0 ) . (`mod` firstElement))  rest
+
+``` 
+           
 ## Types
 
 * "Haskell uses type inference to automatically determine the types of all values at compile time based on the way they’re used."
@@ -2186,7 +2206,7 @@ main = do
 ```
 
 
---
+---
 
 Another property that the ```isPallindrome``` function must uphold: calling this function on a string with punctuation marks must give the same result as calling it on a string without those punctuation marks. That is, it should be punctuation invariant,
 
@@ -2218,9 +2238,11 @@ I loved this chapter quite a lot. And for property testing, my mind is blown.
 
 (todo: Look up property testing, and what else can be done using it. Find out how formal verification works.)
 
----
+
 
 *Notes on using QuickCheck*
 
 - QuickCheck might not be able to create values of all types. The type it targets must be an  ```Arbitrary```
 - To resolve this one can install ```stack install quickcheck-instances```, to make QuickCheck work with a variety of types. 
+
+Implement : probabilistic prime checking https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
