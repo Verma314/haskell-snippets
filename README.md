@@ -2246,3 +2246,83 @@ I loved this chapter quite a lot. And for property testing, my mind is blown.
 - To resolve this one can install ```stack install quickcheck-instances```, to make QuickCheck work with a variety of types. 
 
 Implement : probabilistic prime checking https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
+
+
+
+
+## Errors
+
+- The traditional approach of throwing errors is frowned upon in Haskell, because it throws runtime errors; that a compiler can not catch. 
+- Haskell does allow us to throw errors, but there are other--better--ways to handle problems that show up in code. Example using Maybe.
+- ```Maybe``` type can not communicate a "lot" about what "happened." So there is another more powerful type -- ```Either```, that lets us use any value we like to communicate the error.
+
+
+#### Example, The ```head``` function, that can cause runtime errors that are not caught by the GHC
+
+Albeit useful, using ```head``` on an empty list gives us an error
+```
+Prelude> head []
+*** Exception: Prelude.head: empty list
+```
+
+
+Here is the problem: if you compile a code in which head is being operated on an empty list -- GHC **wont** throw a compiler error. You'll realize this issue in runtime only. Where this blows up.
+
+Moreover, the type signature of ```head``` gives no indication that the function will throw a compiler error
+```
+Prelude> :t head
+head :: [a] -> a
+```
+
+
+#### For compiler warnings. (Example, cases where we accidentally perform ```head []```  operation)
+A trick: Using the ```-Wall``` flag to run GHC,
+
+Add the flag in your stack project, in the cabal file,
+```
+executable projectname-exe:
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall   
+  build-depends:       base
+.
+.
+```
+
+If we don't want to miss any warnings, we can compile with ```-error``` flag which will convert warnings to errors.
+
+
+#### What is wrong with ```head```?
+
+```head``` is a partial function, partial functions are often not defined on all the possible inputs. ```head``` is not defined on the ```[]```.
+
+(Claim "most errors in software are due to partial functions "Your program receives input you don’t expect, and the program has no way of dealing with it."
+
+A scenario: a new function ```fooBar``` is created which takes some input and internally calls some other function (that maybe had lesser scope), maybe it calls a bunch of other internal functions. fooBar believes that's scope is now widened, it begins to accept inputs that the internal functions don't have a good way of dealing with. ```fooBar``` in this case is a partial function (if it calls other functions internally which are being sent arguments that ```fooBar``` opinionatedly decided on.)
+
+
+#### Throwing errors
+Throwing errors is an obvious solution, Haskell has an inbuilt function called ```error```. Example,
+```
+myHead :: [a] -> a
+myHead [] = error "empty list"    -- BAD PRACTICE        
+myHead (x:_) = x
+```
+
+Also, _never_ use head, instead use pattern matching. As compiler can warn us if we have pattern matching issues. 
+
+
+**We need a type that can capture when errors might happen, and we need the compiler's help in writing more error-resistant code**
+
+
+
+Note,
+
+-   maximum, succ, sum, ```/``` are also partial functions in prelude that fail on certain inputs.  ( empty lists, maxBound , infinite lists, what does ```/``` fail on?)
+
+
+
+
+### Handling partial functions with Maybe
+
+*in progress*
