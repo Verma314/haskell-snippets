@@ -2362,4 +2362,86 @@ Although, tail is also a partial function. #CSTODO to dig into this further.
 
 ## The Either type
 
-*in progress*
+Although the ```Maybe``` type is very [[08-02 Handling partial functions with Maybe|useful to handle edge cases]] and exception scenarios. Returning ```Nothing``` does not convey a lot.
+
+Example, a primality testing program, which returns ```Nothing``` if the number given to it is more than what it can compute. Here, ```Nothing``` does not convey anything, it is quite cryptic. 
+
+So we introduce the ```Either``` type.
+
+Either is defined,
+```
+data Either a b = Left a | Right b
+```
+
+This is **beautiful**, this is a type that can send the ACTUAL data, OR in case of an error, a meaningful error message. 
+
+This is an ```or``` type, for error handling scenario we return the ```Left``` constructor. We return the ```Right``` constructor when things go as planned.
+The ```Right``` constructor is similar to basically similar to ```Just```.
+
+This is more powerful than ```Maybe``` because we can return the ```Left``` constructor _and_ it can convey an error message.  If we are operating with an ```Either``` type in a function, and the ```Left``` constructor pops up, the GHC won't forcibly try to carry out the operation with the ```Left``` constructor (I think),
+
+example,
+
+```
+> (+12) <$> (Right 101)
+Right 113
+
+> (+12) <$> (Left 101)
+Left 101
+
+> (+12) <$> (Left "errrorrr!")
+Left "errrorrr!"
+
+```
+
+
+Either can help us create a safer type of the ```head``` function,
+```
+eitherHead :: [a] -> Either String a
+eitherHead [] = Left "There is no head because the list is empty"
+eitherHead (x:xs) = Right x
+```
+
+Note the type signature,   ```Either String a``` , means Left constructor takes a string, right constructor (if things go according to plan) takes ```a```, i.e. an element from the list.
+
+Example,
+```
+> eitherHead [1..]
+Right 1
+>
+
+> eitherHead []
+Left "Can't return head -- List Empty!"
+```
+
+
+
+
+Also, ```Either``` implements a Monad (and thus a Functor, and Applicative as well. Why? Because Monad _is_ an Applicative, and an Applicative _is_ a functor.)
+This is clear because above we apply the ```<$>``` and the ```<*>``` on the Either already. 
+
+A more involved example, add the first two elements of a List using ```eitherHead```,
+
+```
+add2From :: [Int] -> Either String Int
+add2From myList =  (+)  <$>  (eitherHead myList) <*> (eitherHead (tail myList))
+```
+
+Examples,
+```
+> 
+> addTwoValuesList [1,2,3]
+Right 3
+>
+> 
+> addTwoValuesList [1]
+Left "Can't return head -- List Empty!"
+>
+> 
+> addTwoValuesList []
+Left "Can't return head -- List Empty!"
+>
+>
+```
+Beautiful.
+
