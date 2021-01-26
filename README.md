@@ -2325,4 +2325,41 @@ Note,
 
 ### Handling partial functions with Maybe
 
+Remember that ```Maybe``` lets us avoid the use of Null, that is used so often in other languages. ```Maybe``` can transform a partial function into a "complete" function. 
+
+So instead of doing this,
+```
+myHead :: [a] -> a
+myHead [] = error "Empty list"
+myHead (x:_) = x
+```
+
+We can do this,
+```
+maybeHead :: [a] -> Maybe a
+maybeHead [] = Nothing
+maybeHead (x:_) = Just x
+```
+
+We can use ```<*>```  and ```<$>``` on this 
+```
+result1 = ( * 10 ) <$> maybeHead [10,20,30]
+result2 = (*) <$> maybeHead [10,2,3]  <*> (Just 55)
+exampleVal = (:) <$> maybeHead \[1,2,3\] <\*> Just \[1,2,3\]
+```
+
+Another example,
+To make take safer we can do, 
+```
+myTakeSafer :: Int -> Maybe [a] -> Maybe [a]
+myTakeSafer 0 _ = Just []
+myTakeSafer n (Just xs) = (:) <$> maybeHead xs
+                              <*> myTakeSafer (n-1) (Just (tail xs))
+```
+
+Although, tail is also a partial function. #CSTODO to dig into this further.
+
+
+## The Either type
+
 *in progress*
