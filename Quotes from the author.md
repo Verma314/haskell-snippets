@@ -10,3 +10,6 @@ Both OOP design patterns and category theoretic type classes abstract out common
 
 
 * As you can see, Functor’s <$> provides a common interface to apply any function to a value in a context. For types such as List and Map, this is a convenient way to update values in these containers. For IO, it’s essential to be able to change values in an IO context, because you can’t take IO values out of their context.
+
+
+* " The great thing about Either is that because the Left constructor can be any type, there’s no limit to how expressive you can be. If you wanted to, you could return a function!"

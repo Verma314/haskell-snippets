@@ -2445,3 +2445,37 @@ Left "Can't return head -- List Empty!"
 ```
 Beautiful.
 
+
+Remember that ```Either``` lets us use any type we want to.
+Also we can stick to n number of error messages using Either.
+
+### An example: Prime Checker with Either
+
+
+Remember how we discussed earlier how ```Maybe``` is not sufficient enough to display nuanced error messages. [[08-03 The Either Type]] We discussed the nuance  required for primality checking.
+
+Now, ```Either``` let us return a whole array of error messages. And display the relevant message (on failure) in our primality testing.
+
+
+```
+isPrime :: Int -> Either String Bool
+isPrime n
+   | n < 2 = Left "Numbers less than 2 are not candidates for primes"
+   | n > maxN = Left "Value exceeds limits of prime checker"
+   | otherwise = Right (n `elem` primes)
+```
+
+
+Testing the isPrime Method
+```
+*Main> isPrime (-100)
+Left "Numbers less than 2 are not candidates for primes"
+*Main> isPrime 17
+Right True
+*Main> isPrime 10
+Right False
+*Main> 
+*Main> isPrime 1000000000
+Left "Value exceeds limits of prime checker"
+*Main> 
+```
