@@ -1,4 +1,6 @@
+import qualified Data.Char as D
 -- error handline with Either
+
 
 
 primes :: [Int]
@@ -48,6 +50,55 @@ main = do
         main
 
 
-
-
 -----------------------------------------        
+-----------------------------------------              
+-------------- Exercises ----------------
+-----------------------------------------        
+-----------------------------------------
+
+{-
+Make a function addStrInts that takes two Ints 
+represented as Strings and adds them. 
+The function would return an Either String Int.
+ The Right constructor should return the result, 
+ provided that the two arguments can be parsed into Ints (use Data.Char isDigit to check). 
+ Return a different Left result for the three possible cases:
+
+First value can’t be parsed.
+Second value can’t be parsed.
+Neither value can be parsed.
+
+-}
+
+isNegative :: String -> Bool
+isNegative (x:num) = if ( x == '-') then True
+                     else False
+
+-- 
+
+isStrNumber :: String -> Bool
+isStrNumber "" = False
+isStrNumber givenNumberAsString =  if isNegative givenNumberAsString 
+                                   then  isStrNumber (tail givenNumberAsString)
+                                   else all D.isDigit givenNumberAsString 
+
+strToNum :: String -> Int
+strToNum givenNumberAsString = if isNegative givenNumberAsString
+                               then (-1) * (read (tail givenNumberAsString))
+                               else read givenNumberAsString
+
+
+addStrInts :: String -> String -> Either String Int
+addStrInts input1 input2 | isInput1Num && isInput2Num = Right (input1Parsed + input2Parsed)
+                         | (not isInput1Num) && isInput2Num = Left "input 1 is not a number"
+                         | isInput1Num && (not isInput2Num) = Left "input 2 is not a number"
+                         | (not isInput1Num) && (not isInput2Num) = Left "Neither are numbers"
+    where isInput1Num = isStrNumber input1
+          isInput2Num = isStrNumber input2
+          input1Parsed = strToNum input1
+          input2Parsed = strToNum input2
+
+
+
+
+
