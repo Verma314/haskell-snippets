@@ -2479,3 +2479,102 @@ Right False
 Left "Value exceeds limits of prime checker"
 *Main> 
 ```
+
+### Error handling with ```Either```
+
+So far we haven't taken advantage of the fact that the ```Either``` type class can accept arbitrary data type. 
+
+Many programming languages have custom types for various kinds of errors. We can create similar types which model an error, and pass it to ```Either``` to show the relevant errors.
+
+Example, for primality testing errors, we can have,
+```
+data PrimeError = TooLarge | InvalidValue
+
+instance Show PrimeError where
+	show TooLarge = "Value exceeded max bound"
+	show InvalidValue = "Value is not a valid candidate for primality checking"
+```
+
+Based on the above, we can modify our primality checking function,
+```
+isPrime :: Int -> Either PrimeError Bool
+isPrime num | num < 2 = Left InvalidValue
+		    | num > maxBound = Left TooLarge
+			| otherwise = Right (elem num primes)
+```
+
+Testing it,
+```
+> 
+> isPrime 13
+Right True
+> isPrime 10
+Right False
+> 
+> isPrime (-1)
+Left Value is not a valid candidate for primality checking
+> 
+> isPrime 0
+Left Value is not a valid candidate for primality checking
+> 
+> isPrime 10000000
+Left Value exceeded max bound
+> 
+```
+
+
+Makes code much more readable. And returns valid information. As Jason Fried says, "even the error messages in your software are a form of marketing."
+
+
+Right now our primality checker is returning a ```Either PrimeError Bool``` type, why not return the client a ```String``` always?
+
+```
+displayResult :: Either PrimeError Bool -> String
+displayResult (Right True) = "Number is a prime"
+displayResult (Right False) = "Number is a composite"
+displayResult (Left primeError) = show primeError --can take Eithers out of ctx
+```
+
+A main IO action,
+```
+main :: IO ()
+main = do   
+        input <- getLine
+        let inputInt = read input :: Int -- or use, input <- read <$> getLine
+        let primeTestResults =  (displayResult . isPrime) inputInt
+        putStrLn primeTestResults
+        main
+```
+
+Its testing,
+```
+> main
+1
+Value is not a valid candidate for primality checking
+0
+Value is not a valid candidate for primality checking
+1000
+Value exceeded max bound
+25
+Number is a composite
+13
+Number is a prime
+4
+Number is a composite
+.
+.
+.
+```
+
+
+Thus, creation  of error classes (like ```PrimeError```) demonstrates sophisticated ways of handling errors. 
+
+ Because of the flexibility of the ```Either``` type, i.e how the ```Left``` constructor can _be_ any type, the expressiveness is huge. As we can provide the ```Left``` data constructor types like Strings, or Ints, other custom error classes, or even a function. In which case the ```Left``` would return a function. 
+ 
+In summary, ```Either``` has a dual function, it can  help us safely handle errors -- providing detailed information about it. It also lets us return actual data (just like a ```Maybe```)
+
+ 
+
+
+
+

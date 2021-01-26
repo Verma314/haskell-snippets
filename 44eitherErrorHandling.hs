@@ -102,3 +102,39 @@ addStrInts input1 input2 | isInput1Num && isInput2Num = Right (input1Parsed + in
 
 
 
+
+{-
+The following are all partial functions. 
+Use the type specified to implement a safer version of the function:
+
+succ—Maybe
+tail—[a] (Keep the type the same.)
+last—Either (last fails on empty lists and infinite lists; use an upper bound for the infinite case.)
+-}
+
+maybeSucc :: (Eq a, Bounded a, Enum a) => a -> Maybe a
+maybeSucc element = if element == maxBound 
+                    then Nothing
+                    else Just (succ element)
+
+{-
+*Main D> maybeSucc (maxBound :: Char)
+Nothing
+*Main D> 
+*Main D> maybeSucc (maxBound :: Int)
+Nothing
+*Main D> maybeSucc 'A'
+Just 'B'-}
+
+saferTail :: [a] -> [a]
+saferTail [] = []
+saferTail myList = tail myList
+
+-- last—Either (last fails on empty lists and infinite lists; use an upper bound for the infinite case.)
+safeLast :: (Eq b, Bounded b) => [b] -> Either String b
+safeLast myList | (length (take intMaxBound myList) == intMaxBound) =  Left "Out of bounds -- list too large"
+                | (length myList == 0) =        Left "Empty list"
+                | otherwise = Right (last myList)
+    where intMaxBound = 5000000
+-- max size of list: 5 million
+
