@@ -49,7 +49,7 @@ executable http-lesson-exe
     , bytestring
     , http-conduit
   default-language: Haskell2010
-  extensions: OverloadedStrings
+  default-extensions: OverloadedStrings
 
 test-suite http-lesson-test
   type: exitcode-stdio-1.0
