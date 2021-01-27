@@ -2581,9 +2581,98 @@ We use the Network.HTTP.Simple library for HTTP. This library is part of the htt
 
 The library makes it easy to make simple HTTP requests.
 
-- Generally we create an instance of the  ```Request```  data type, and pass it to ```httpLBS``` to execute. 
-  Example, 
-  ```
-  response = httpLBS "http://news.ycombinator.com"
-  ```
-- Defining a request object does not execute the HTTP Request (because of lazy evaluation)
+Generally we create an instance of the  ```Request```  data type, and pass it to ```httpLBS``` to execute. 
+
+Example, 
+```
+> response = httpLBS "http://news.ycombinator.com"
+```
+
+Just Defining a request object does not execute the HTTP Request (because of lazy evaluation)
+
+The response object is actually wrapped in an ```IO```.  It's type is 
+```IO (Response a)``` . More specifically ```IO (Response LC.ByteString)```
+
+To get the status from the response,
+```
+> getResponseStatusCode <$> response
+```
+
+An alternative solution is using ```<-```, which lets us take the value out of context (even inside GHCi). Example,
+```
+Prelude> response <- httpLBS "http://news.ycombinator.com"
+Prelude> getResponseStatusCode response
+200
+```
+
+### Creating an HTTP GET Request
+
+We've got to 
+- add token to our request
+- specify the host and path
+- use GET
+- make sure request works for "SSL Connection"
+
+---
+
+Note, ```defaultRequest``` is provided by the library.
+
+Note also, the type signature of these setters,
+```
+> :t setRequestPort
+setRequestPort :: Int -> Request -> Request
+```
+They take in the "state" i.e. Request, and return a new Request object.
+(Author W. Kurt says, "Here you see one functional solution to having state. You create a new copy with the modified value" )
+
+Using the relevant functions we build our request,
+```
+buildRequest :: BC.ByteString -> BC.ByteString -> BC.ByteString
+                    -> BC.ByteString -> Request
+buildRequest token host method path =  setRequestMethod method 
+                                        (setRequestHost host
+                                            (setRequestHeader "token" [myToken]
+                                            (setRequestPath path
+                                                (setRequestSecure True
+                                                        (setRequestPort 443 defaultRequest )))))
+```
+
+This is super-cumbersome, so we use the syntactic sugar via ```($)``` operator
+
+```
+buildRequest :: BC.ByteString -> BC.ByteString -> BC.ByteString
+             -> BC.ByteString -> Request
+buildRequest token host method path  = setRequestMethod method
+                                  $ setRequestHost host
+                                  $ setRequestHeader "token" [token]
+                                  $ setRequestPath path
+                                  $ setRequestSecure True
+                                  $ setRequestPort 443
+                                  $ defaultRequest
+```
+
+
+
+To execute this request,
+- pass ```Request``` to ```httpLBS```
+- check if the status is 200.
+- if it's 200, use ```getResponseBody``` and write the response to a file (note: you must use lazy ByteStrings - L.writeFile, instead of the function in Char8)
+- If there is an error, raise an alert. 
+
+```
+main :: IO ()
+main = do
+  response <- httpLBS request
+  let status = getResponseStatusCode response
+  if status == 200
+    then do
+         print "saving request to file"
+         let jsonBody = getResponseBody response
+         L.writeFile "data.json" jsonBody
+    else print "request failed with error"
+```
+
+note how we can have a do block inside another do block.
+
+Full documentation at  https://haskell-lang.org/library/http-client 
+

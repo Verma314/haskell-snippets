@@ -58,3 +58,8 @@ main = do
          let jsonBody = getResponseBody response
          L.writeFile "data.json" jsonBody
     else print "request failed with error"
+
+
+-- todo: Fix main so that if you do get a non-200 statusCode, you print out the appropriate error.
+
+    

@@ -1,5 +1,9 @@
 Quotes from the author
 
+
+* "When you write your file, it’s important to notice that you’re using the raw lazy ByteStrings with L.writeFile rather than the Char8 version LC.writeFile. In lesson 25, we mentioned that when you use binary data that may include Unicode, you should never write it using the Char8 interface, as it can corrupt your data."
+
+
 * * From the author,
 " All of these type classes represent the design patterns of functional programming
 .. 
