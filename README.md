@@ -2578,3 +2578,12 @@ In summary, ```Either``` has a dual function, it can  help us safely handle erro
 ## HTTP 
 
 We use the Network.HTTP.Simple library for HTTP. This library is part of the http-conduit package.
+
+The library makes it easy to make simple HTTP requests.
+
+- Generally we create an instance of the  ```Request```  data type, and pass it to ```httpLBS``` to execute. 
+  Example, 
+  ```
+  response = httpLBS "http://news.ycombinator.com"
+  ```
+- Defining a request object does not execute the HTTP Request (because of lazy evaluation)
