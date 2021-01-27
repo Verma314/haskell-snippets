@@ -2575,6 +2575,6 @@ In summary, ```Either``` has a dual function, it can  help us safely handle erro
 
  
 
+## HTTP 
 
-
-
+We use the Network.HTTP.Simple library for HTTP. This library is part of the http-conduit package.
