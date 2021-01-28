@@ -2676,3 +2676,7 @@ note how we can have a do block inside another do block.
 
 Full documentation at  https://haskell-lang.org/library/http-client 
 
+
+## JSON 
+
+*in progress*
