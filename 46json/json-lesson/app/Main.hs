@@ -77,10 +77,43 @@ instance FromJSON ErrorMessage where
                  <*> v .: "error"
 
 
+-- more exercises,
+{-
+Make a Sum type called IntList and use DerivingGeneric to make it an instance of ToJSON. Don’t use the existing List type, but rather write it from scratch. Here’s an example of an IntList:
 
+intListExample :: IntList
+intListExample = Cons 1 $
+                 Cons 2 EmptyList
+-}
 
+data IntList = Cons Int IntList | EmptyList deriving (Show,Eq)
 
+x = Cons 1 $ Cons 2 $ Cons 3 $ EmptyList 
 
+-- making it an instance of ToJson
+instance ToJSON IntList where 
+    --toJSON EmptyList = object [ "Cons" .= 0, ]
+    toJSON (Cons element restOfTheList ) = if (restOfTheList == EmptyList ) 
+                                           then  
+                                           object [ "Element: " .= element ] 
+                                           else object [ "Element: " .= element, " $ " .= toJSON restOfTheList]
+
+jsonedList = encode x
+   
+-- returns   
+{-
+{
+    "Element:": 1,
+    " $ ": {
+        "Element: ": 2,
+        " $ ": {
+            "Element: ": 3
+        }
+    }
+}
+-}
+
+-- or one could simply derive Generic :p
 
 
 

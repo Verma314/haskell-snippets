@@ -1,3 +1,34 @@
+* Creating AND data types and avoiding parentheses,
+
+```
+data Sum = Cons Int Sum | EmptyList deriving (Show)
+```
+
+Test,
+```
+> x = Cons 1 $ Cons 2 $ Cons 3 $ EmptyList 
+> x
+Cons 1 (Cons 2 (Cons 3 EmptyList))
+```
+
+
+Converting it to json,
+```
+
+instance ToJSON IntList where 
+    toJSON (Cons element restOfTheList ) = 
+              if (restOfTheList == EmptyList ) 
+              then  
+              object [ "Element: " .= element ] 
+              else object [ "Element: " .= element, " $ " .= toJSON restOfTheList]
+
+jsonedList = encode x
+```
+
+
+
+
+
 * Looping-ish :P
 ```
 import Control.Monad
