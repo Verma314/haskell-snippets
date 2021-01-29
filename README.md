@@ -2677,6 +2677,234 @@ note how we can have a do block inside another do block.
 Full documentation at  https://haskell-lang.org/library/http-client 
 
 
-## JSON 
+## JSON: Basic concepts
 
-*in progress*
+
+We use the library ```Data.Aeson```  to work with json. It allows us to translate between a haskell type and json.
+
+We use two methods to do that,
+- **```decode```** whose type signature look likes,
+```
+decode :: FromJSON a => ByteString -> Maybe a
+```
+Note how the type we want to convert to json should be a ```FromJSON``` type. That is, it must implement certain methods to let us convert a (json) ByteString into the type. The function returns the type wrapped in a ```Maybe``` because: parsing the json (before we can translate it into haskell object) might throw a parse error.
+
+- Similarly, we have **```encode```. **
+```
+encode :: ToJSON a => a -> ByteString
+```
+The data type to encode must be a ```ToJSON```.
+
+
+We also, have ```eitherDecode``` which gives us a more detailed error statement in case there is failure to parse the JSON.
+
+
+
+## Converting Objects ToJSON or FromJSON: via language extension DeriveGeneric
+
+We use the language extension ```DeriveGeneric```, and make our object derive  from ```Generic```, example
+```
+import GHC.Generics
+
+data Book = Book
+            { title :: T.Text
+            , author :: T.Text
+            , year :: Int
+            } deriving (Show,Generic)
+```
+
+Then we declare this type an instance of ```FromJSON``` and ```ToJSON```, example:
+```
+instance FromJSON Book
+instance ToJSON Book
+```
+And now we will be able to convert Book back and forth from a json bytestring.
+
+Example,
+```
+myBook :: Book
+myBook = Book {author="Will Kurt"
+              ,title="Learn Haskell"
+              ,year=2017}
+
+myBookJSON :: BC.ByteString
+myBookJSON = encode myBook
+```
+
+and,
+```
+rawJSON :: BC.ByteString
+rawJSON = "{\"author\": \"Will Kurt\",\"title\": \"Learn Haskell\",\"year\": 		                        												2017 }"
+bookFromJSON :: Maybe Book
+bookFromJSON = decode rawJSON
+```
+
+
+*I genuinely don't understand how deriving from ```Generic``` can let us automatically make our type a ```FromJSON``` or ```ToJSON```*
+
+
+## Write our own instances, FromJSON or ToJSON by hand
+
+### FromJSON (decode)
+
+Making out type an instance of FromJSON. 
+
+We have a json, ```decode``` it into a haskell object.
+```
+decode :: FromJSON a => ByteString -> Maybe a
+```
+
+
+Let's say we get hold of a JSON from an external source (say a GET request), example,
+```
+sampleError :: BC.ByteString
+sampleError = "{\"message\":\"oops!\",\"error\": 123}"
+```
+
+We need to model the above json with our Haskell type,
+```
+data ErrorMessage = ErrorMessage
+                    { message :: T.Text
+                    , error :: Int               
+                    } deriving Show
+```
+As we know, that the above syntax creates two functions                                         ```message :: ErrorMessage -> T.Text``` and
+```error :: ErrorMessage  -> Int```.
+
+So this causes a conflict because ```error``` is already defined in ```GHC.Err```.
+
+**So we change the name of the field***
+```
+data ErrorMessage = ErrorMessage
+                    { message :: T.Text
+                    , errorCode :: Int
+                   } deriving Show
+```
+
+Now if we try to automatically make ```ErrorMessage``` derive  ```ToJSON``` and ```FromJSON```, we run into another problem because the ```decode``` function now expects an "error" field, but does not find one.
+```
+decode :: FromJSON a => ByteString -> Maybe a
+```
+
+
+**To make our ```ErrorMessage``` type an instance of ```FromJSON```, we need to implement the ```parseJSON``` function for ```ErrorMessage```**
+
+```
+instance FromJSON ErrorMessage where
+  parseJSON (Object v) =
+    ErrorMessage <$> v .: "message"
+                 <*> v .: "error"
+```
+
+Here
+- ```(Object v)``` is the JSON object.
+- ```ErrorMessage``` is the function ``` T.Text -> Int -> ErrorMessage```
+- ```v .: "message"``` a value in context. From the JSON Object v it is _parsing_ the "message" field, returning its value in a context.
+- ```v .: "error",``` again, looks into the JSON object, and retrieve the key associated with "error". 
+
+And basically, extracting the values from the JSON, and giving them to the ```ErrorMessage``` is how we implement parseJSON for ```ErrorMessage```.
+
+For more clarity, 
+```
+(.:) :: FromJSON a => Object -> Text -> Parser a
+```
+
+
+#### Examples,
+```
+data Name = Name
+    { firstName :: T.Text
+    , lastName :: T.Text
+    } deriving (Show)
+
+
+instance FromJSON Name where
+    parseJSON (Object v) = Name <$> v .: "firstName"
+                                <*> v .: "lastName"
+								
+
+
+-- Converting,
+
+sampleAdi :: BC.ByteString
+sampleAdi =  "{\"lastName\":\"Verma\",\"firstName\":\"Aditya\"}"
+
+adiInAConextNow :: Maybe Name
+adiInAConextNow = decode ( sampleAdi)
+```
+
+Hence the json was converted to a Haskell type.
+```
+Prelude > adiInAConextNow 
+Just (Name {firstName = "Aditya", lastName = "Verma"})
+```
+
+
+### ToJSON (encode)
+
+```
+encode :: ToJSON a => a -> ByteString
+```
+
+We have a Haskell object, we wanna convert it to JSON. 
+We need to implement the method ```toJSON```.
+
+
+For ```ErrorMessage``` it looks like,
+
+```
+instance ToJSON ErrorMessage where
+  toJSON (ErrorMessage message errorCode) =
+    object [ "message" .= message
+           , "error" .= errorCode
+           ]
+```
+
+The object function takes a ```Pair``` and returns a ```Value``` (a json object?), these are types defined in ```Aeson```.
+
+The operator  ```(.=)``` is used to create a key/value pair matching the value of your data (message/errorCode) with the field name for the JSON object (message/error).
+
+#### Example
+```
+message = "hi" 
+error = "err"
+obj = object [ "message" .= message, "error" .= error]
+```
+
+Where obj is
+```
+> obj
+Object (fromList [("error",String "err"),("message",String "hi")])
+```
+This is how  this object functions helps  ```toJSON```  convert our type into a JSON object.
+
+Encode objects of ```ErrorMessage``` type. Example
+```
+getMessage :: ErrorMessage
+getMessage = ErrorMessage "Random Message" 200
+```
+
+Testing,
+```
+> encode getMessage
+"{\"error\":200,\"message\":\"Random Message\"}"
+```
+
+Other examples,
+```
+instance ToJSON Name where 
+    toJSON (Name firstName lastName ) = object [  "firstName" .= firstName, 
+                                                "lastName" .= lastName]
+
+adi = Name "Aditya" "Verma"
+adiJSON = encode adi
+
+-- gives us:
+-- "{\"lastName\":\"Verma\",\"firstName\":\"Aditya\"}"
+```
+
+
+
+More info here: https://artyom.me/aeson
+
+
