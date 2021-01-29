@@ -12,6 +12,17 @@ resolver: ghc-8.8.4
 system-ghc: true
 ```
 
+Make sure this is uncommented
+```
+resolver:
+  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/17/0.yaml
+```
+
+
+Is this a bug in stack? When we comment the resolver, the ```stack build``` does not work. It just hangs at ```Downloading Index```.
+Should this be fixed?
+
+CSTODO: Study a bit more about resolver and stack, and then understand why this is being caused, reproduce this issue, is this _is_ an issue -- raise an issue with the stack repo.
 
 * Maybe is an instance of Monad (and therefore Functor and Applicative),
 
