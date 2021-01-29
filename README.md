@@ -2743,11 +2743,11 @@ bookFromJSON = decode rawJSON
 *I genuinely don't understand how deriving from ```Generic``` can let us automatically make our type a ```FromJSON``` or ```ToJSON```*
 
 
-## Write our own instances, FromJSON or ToJSON by hand
+## Write our own instances: FromJSON or ToJSON by hand
 
 ### FromJSON (decode)
 
-Making out type an instance of FromJSON. 
+Making our type an instance of FromJSON. 
 
 We have a json, ```decode``` it into a haskell object.
 ```
@@ -2768,12 +2768,13 @@ data ErrorMessage = ErrorMessage
                     , error :: Int               
                     } deriving Show
 ```
-As we know, that the above syntax creates two functions                                         ```message :: ErrorMessage -> T.Text``` and
-```error :: ErrorMessage  -> Int```.
+As we know, that the above syntax creates two functions                                       
+```message :: ErrorMessage -> T.Text``` and
+```error :: ErrorMessage  -> Int```
 
 So this causes a conflict because ```error``` is already defined in ```GHC.Err```.
 
-**So we change the name of the field***
+**So we change the name of the field**
 ```
 data ErrorMessage = ErrorMessage
                     { message :: T.Text
@@ -2781,7 +2782,7 @@ data ErrorMessage = ErrorMessage
                    } deriving Show
 ```
 
-Now if we try to automatically make ```ErrorMessage``` derive  ```ToJSON``` and ```FromJSON```, we run into another problem because the ```decode``` function now expects an "error" field, but does not find one.
+Now if we try to automatically make ```ErrorMessage``` derive  ```ToJSON``` and ```FromJSON```, we run into another problem because the ```decode``` function now expects an "error" field (in our ```ErrorMessage```), but does not find one.
 ```
 decode :: FromJSON a => ByteString -> Maybe a
 ```
@@ -2804,7 +2805,7 @@ Here
 
 And basically, extracting the values from the JSON, and giving them to the ```ErrorMessage``` is how we implement parseJSON for ```ErrorMessage```.
 
-For more clarity, 
+For more clarity the type signature is,
 ```
 (.:) :: FromJSON a => Object -> Text -> Parser a
 ```
