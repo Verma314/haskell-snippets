@@ -26,7 +26,10 @@ jsonedList = encode x
 ```
 
 
+* Why use mconcat instead of ```++```?
 
+ mconcat works on all major string types: String, Text, and ByteString. 
+This makes refactoring code to change types as easy as changing type signatures.
 
 
 * Looping-ish :P

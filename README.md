@@ -2910,6 +2910,52 @@ More info here: https://artyom.me/aeson
 
 ---
 
-# Connecting to a database
+# Databases
 
 (for code. go to the directory 47db/* )
+
+### Setting up the db
+We use the ```sqllite-simple```  to interact with the db. 
+
+Create you tables, add records in them, all in an sql file say ```build_db.sql```, then execute,
+```
+sqlite3 tools.db < build_db.sql
+```
+Now ```tools.db``` is our db name, a new file will be generated in our directory. To load the db, execute,
+```
+sqlite3 tools.db
+```
+To test it out,
+```
+sqlite> select * from tools;
+1|hammer|hits stuff|2017-01-01|0
+2|saw|cuts stuff|2017-01-01|0
+```
+
+### Adding records to the DB via Haskell
+
+We added values into the table via raw SQL, like
+```
+INSERT INTO users (username) VALUES ('aditya');
+```
+
+How do we do this in Haskell? 
+- Establish a conn with the db. ```conn <- open "tools.db" ```
+- Use the ```execute``` function which allows us to insert values into the table, Example 
+  ```
+  execute conn "INSERT INTO users (username) VALUES (?)" (Only userName) 	
+  ```
+   Note here that the ```(?)``` lets us safely pass values into our string. Only is used to create _single element_ tuples.  "This is needed because ```execute``` expects us to pass a tuple of certain size for our values.
+- We also need to **Close** the connection ```close conn```
+- We wrap this up in a ```do``` block in an IO action
+
+```
+addUser :: String -> IO ()
+addUser username =  do  
+                    conn <- open "tools.db"
+                    execute conn "INSERT INTO users (username) VALUES (?)" (Only username)
+                    print "user added"
+                    close conn
+```
+
+
