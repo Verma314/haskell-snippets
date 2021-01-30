@@ -2908,4 +2908,8 @@ adiJSON = encode adi
 
 More info here: https://artyom.me/aeson
 
+---
 
+# Connecting to a database
+
+(for code. go to the directory 47db/* )
