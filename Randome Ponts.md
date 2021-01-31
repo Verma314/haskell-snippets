@@ -1,3 +1,7 @@
+* if you wanna print  (ie ```Show```) random types to the screen -- Use ```print```,
+not ```putStrLn```
+
+
 * Creating AND data types and avoiding parentheses,
 
 ```
@@ -39,6 +43,18 @@ forM_ [1,2,3,4,5] print
 ```
 
 Search Control.Monad, revisit what ```mapM_``` does
+
+
+mapM_ takes two argume
+
+```
+> x = mapM_ (putStrLn . show .(+ 1) . read )  ["1","2"]
+> :t x
+x :: IO ()
+> x
+2
+3
+```
 
 * A more robust way to force stack to use PATH ghc is to modify the stack.yaml, and insert your ghc version,
 ```

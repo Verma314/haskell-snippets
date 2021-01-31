@@ -17,3 +17,5 @@ Both OOP design patterns and category theoretic type classes abstract out common
 
 
 * " The great thing about Either is that because the Left constructor can be any type, there’s no limit to how expressive you can be. If you wanted to, you could return a function!"
+
+* "Also notice that Query is its own type. You’ve been treating your queries as strings, but this is all thanks to the OverloadedStrings extension, which is automatically translating for you."

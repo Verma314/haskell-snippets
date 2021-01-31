@@ -971,6 +971,7 @@ getArgs is important to take user input.
 ```
 mapM_ putStrLn args
 ```
+map (+ 1 ) [1,2,3]
 
 mapM is a modified map to map ```Monad``` types.
 mapM_  is modified mapM, such that it does not output a list. This is because the IO functions (called IO actions) do not return any values.
@@ -2968,7 +2969,7 @@ withConn dbName operation = do
                             close conn
 ```
 
-Which you can use to avoid having to deal with ```conn```,
+The above function you can use to avoid having to deal with ```conn```,
 ```
 addUserNew :: String -> IO ()
 addUserNew user = withConn "tools.db" $
@@ -3021,3 +3022,46 @@ class FromRow a where
 ```
 Consequently, we will be able to transform queries into lists of our datatype.
 
+## Making our data an instance of ```FromRow```
+
+We have to tell the ```RowParser``` how to construct our data type.  We use the ```field``` function (implemented in SQLite.Simple) which consumes the data in the table's row and transforms it into values required by our type constructor. 
+
+To implement ```fromRow``` for ```User``` and ```Tool```,
+```
+instance FromRow User where
+	fromRow = User <$> field
+	               <*> field
+
+instance FromRow Tool where
+	fromRow = Tool <$> field
+				   <*> field
+				   <*> field
+				   <*> field
+				   <*> field
+```
+Now that both ```User``` and ```Tool``` are instances of ```FromRow``` we can execute queries and translate their results directly to haskell types.
+
+## Querying the DB
+We use these two methods to query,
+```
+query :: (FromRow r, ToRow q) => Connection -> Query -> q -> IO [r]
+query_ :: FromRow r => Connection -> Query -> IO [r]
+```
+The difference is ```query_``` is for queries that take no arguments.
+
+To retrieve the set of users,
+```
+printUsers :: IO ()
+printUsers = do 
+        withConn "tools.db" $
+                (\ conn ->
+                           do
+                           values <- query_ conn 
+						            "SELECT * FROM users"  :: IO [User]    
+                           mapM_ print values          
+                )                           
+```
+
+### More query examples, and a meta query executor
+
+*in progress*
