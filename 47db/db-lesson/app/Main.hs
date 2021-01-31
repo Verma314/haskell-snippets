@@ -78,7 +78,6 @@ checkout userId toolId = withConn "tools.db" $
 -- Reading from DB, and
 -- Converting rows into Haskell types.
 
-
 data Tool = Tool
  { toolId :: Int
  , name :: String
@@ -87,7 +86,7 @@ data Tool = Tool
  , timesBorrowed :: Int
  }
 
- data User = User
+data User = User
  { userId :: Int
  , userName :: String
  }
@@ -110,7 +109,26 @@ instance Show Tool where
                        , "\n"]
 
                        
+instance FromRow User where
+   fromRow = User <$> field
+                  <*> field
 
+instance FromRow Tool where
+   fromRow = Tool <$> field
+                  <*> field
+                  <*> field
+                  <*> field
+                  <*> field
+
+
+printUsers :: IO ()
+printUsers = do 
+        withConn "tools.db" $
+                (\ conn ->
+                           do
+                           values <- query_ conn "SELECT * FROM users"  :: IO [User]    
+                           mapM_ print values          
+                )                           
 
 
 
