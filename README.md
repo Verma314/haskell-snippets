@@ -2914,7 +2914,7 @@ More info here: https://artyom.me/aeson
 
 (for code. go to the directory 47db/* )
 
-### Setting up the db
+## Setting up the db
 We use the ```sqllite-simple```  to interact with the db. 
 
 Create you tables, add records in them, all in an sql file say ```build_db.sql```, then execute,
@@ -2932,7 +2932,7 @@ sqlite> select * from tools;
 2|saw|cuts stuff|2017-01-01|0
 ```
 
-### Adding records to the DB via Haskell
+## Adding records to the DB via Haskell
 
 We added values into the table via raw SQL, like
 ```
@@ -2958,4 +2958,66 @@ addUser username =  do
                     close conn
 ```
 
+### Creating a general method which handles the connection to our db and performs an IO action.
+```
+-- takes in the db value , and an IO action
+withConn :: String -> (Connection -> IO ()) -> IO ()
+withConn dbName operation = do
+                            conn <- open dbName
+                            operation conn 
+                            close conn
+```
+
+Which you can use to avoid having to deal with ```conn```,
+```
+addUserNew :: String -> IO ()
+addUserNew user = withConn "tools.db" $
+  (\ conn -> do 
+             execute conn  "INSERT INTO users (username) VALUES (?)"(Only user)
+             putStrLn "added user")
+									
+```
+
+	
+
+For more brevity we can do this:
+```
+-- lambdas are tedious, so we create,
+executeWrapper :: ToRow q =>  Query -> q -> String -> (Connection -> IO ())
+executeWrapper sqlStml tuples successMsg =
+            (\ conn ->  do 
+                        execute conn sqlStml tuples
+                        putStrLn successMsg
+            )
+```
+
+Now we can skip the lambdas and the ```conn``` in our db operations, example,
+```
+-- now,
+addUserNew2 :: String -> IO ()
+addUserNew2 user = withConn "tools.db" $
+     				executeWrapper "INSERT INTO users (username) VALUES (?)" 						 
+					                 (Only user)
+											"added the user"
+
+
+-- and, a function to checkout a tool
+checkoutMy :: Int -> Int -> IO ()
+checkoutMy userId toolId = withConn "tools.db" $
+        executeWrapper  "INSERT INTO checkedout (user_id,tool_id) VALUES (?,?)" 
+                             (userId,toolId) 
+		                        "Checked out the tool"
+````
+
+
+##  Reading from a DB
+
+The challenge here is that we want to convert rows of the DB into Haskell types. For this ```sqlite-simple``` library offers a function called ```FromRow```. 
+
+If we wanna convert rows in a database table into a Haskell type ```a```, the type must implement ```FromRow```, which is done by implementing a function ```fromRow```. Definition of ```FromRow```
+```
+class FromRow a where
+   fromRow :: RowParser a
+```
+Consequently, we will be able to transform queries into lists of our datatype.
 

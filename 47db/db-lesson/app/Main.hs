@@ -59,9 +59,7 @@ checkoutMy userId toolId = withConn "tools.db" $
                         (userId,toolId) 
                         "Checked out the tool"
 
-                             
-
-
+                            
 
 checkout :: Int -> Int -> IO ()
 checkout userId toolId = withConn "tools.db" $
@@ -71,6 +69,58 @@ checkout userId toolId = withConn "tools.db" $
                              (userId,toolId)
 
                           
+
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+--------------------------------------------
+
+-- Reading from DB, and
+-- Converting rows into Haskell types.
+
+
+data Tool = Tool
+ { toolId :: Int
+ , name :: String
+ , description :: String
+ , lastReturned :: Day
+ , timesBorrowed :: Int
+ }
+
+ data User = User
+ { userId :: Int
+ , userName :: String
+ }
+
+instance Show User where
+   show user = mconcat [ show $ userId user
+                       , ".)  "
+                       , userName user]
+
+instance Show Tool where
+   show tool = mconcat [ show $ toolId tool
+                       , ".) "
+                       , name tool
+                       , "\n description: "
+                       , description tool
+                       , "\n last returned: "
+                       , show $ lastReturned tool
+                       , "\n times borrowed: "
+                       , show $ timesBorrowed tool
+                       , "\n"]
+
+                       
+
+
+
+
+
+
+
+
+
+
+
 
 
 
