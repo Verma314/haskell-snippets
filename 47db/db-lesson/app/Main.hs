@@ -128,14 +128,96 @@ printUsers = do
                            do
                            values <- query_ conn "SELECT * FROM users"  :: IO [User]    
                            mapM_ print values          
-                )                           
+                )            
 
 
+-- can execute all queries returning a tool
+printToolQuery :: Query -> IO ()
+printToolQuery query = withConn "tools.db" $
+                        ( \ conn -> 
+                                    do
+                                    values <- query_ conn query :: IO [Tool]
+                                    mapM_ print values)
+                               
+-- to use the above,
+printTools :: IO ()
+printTools =  printToolQuery "SELECT * FROM tools;"
+
+printAvailable :: IO ()
+printAvailable = printToolQuery $ mconcat [ "select * from tools "
+                                          , "where id not in "
+                                          , "(select tool_id from checkedout);"]
+
+printCheckedout :: IO ()
+printCheckedout = printToolQuery $ 
+                mconcat [ "select * from tools ", 
+                                "where id in ", 
+                                "(select tool_id from checkedout);"]                                          
+
+------------------------------------------
+------------------------------------------
+------------------------------------------
+-- Update the DB  (important) ------------
 
 
+-- first obtain the tool
+selectTool :: Connection -> Int -> IO (Maybe Tool)
+selectTool conn toolId = do
+   resp <- query conn
+           "SELECT * FROM tools WHERE id = (?)"
+           (Only toolId) :: IO [Tool]
+   return $ firstOrNothing resp
+
+firstOrNothing :: [a] -> Maybe a
+firstOrNothing [] = Nothing
+firstOrNothing (x:_) = Just x
 
 
+-- then update the tool (the Haskell type)
+updateTool :: Tool -> Day -> Tool
+updateTool tool date = tool
+   { lastReturned = date
+   , timesBorrowed = 1 + timesBorrowed tool
+   }
 
+
+-- then put this new tool values in the DB,
+updateOrWarn :: Maybe Tool -> IO ()
+updateOrWarn Nothing = print "id not found"
+updateOrWarn (Just tool) =  withConn "tools.db" $
+                            \conn -> do
+                              let q = mconcat ["UPDATE TOOLS SET  "
+                                              ,"lastReturned = ?,"
+                                              ," timesBorrowed = ? "
+                                              ,"WHERE ID = ?;"]
+
+                              execute conn q (lastReturned tool
+                                             , timesBorrowed tool
+                                             , toolId tool)
+                              print "tool updated"
+
+
+---------
+-- putting it all together
+
+{-
+ updateToolTable, takes a toolId, fetches the current date, 
+ and then performs the necessary steps to update the tool in the table.
+-}
+
+updateToolTable toolId = do
+                         conn <- open "tools.db"
+                         chosenTool <- selectTool conn toolId
+                         currentDate <-  utctDay <$> getCurrentTime  
+                         let newTool = (fmap updateTool chosenTool) <*> (pure currentDate) -- we need a Maybe type for date, don't use Just, use pure to convert
+
+                         --let newTool = updateTool removeMaybeContextTool currentDate
+                         -- nowt hat we have our updated tool,
+                         -- we can use, updateOrWarn ::  Maybe Tool -> IO ()
+
+                         -- newTool is a MaybeTool, and updateOrWarn takes just that as a parameter
+                         updateOrWarn newTool
+                         close conn
 
 
 
