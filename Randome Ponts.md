@@ -50,6 +50,9 @@ This makes refactoring code to change types as easy as changing type signatures.
 
 
 * Looping-ish :P
+
+(This is actually the for each loop)
+
 ```
 import Control.Monad
 forM_ [1,2,3,4,5] print

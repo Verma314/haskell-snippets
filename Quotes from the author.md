@@ -1,5 +1,6 @@
 Quotes from the author
 
+* "One important thing to understand about STUArrays and the ST type in general is that they aren’t a hack that allows you to disregard all the functional purity you’ve worked so hard for. STUArray exists to allow you to perform stateful programming only when that statefulness is indistinguishable from pure code for the users of your functions."
 
 * "When you write your file, it’s important to notice that you’re using the raw lazy ByteStrings with L.writeFile rather than the Char8 version LC.writeFile. In lesson 25, we mentioned that when you use binary data that may include Unicode, you should never write it using the Char8 interface, as it can corrupt your data."
 
@@ -34,3 +35,20 @@ instance ToRow Tool where
 ```
                 
 The SQLText and SQLInteger constructors transform Haskell Text and Integer types to SQL data. In practice, you’ll likely use ToRow much less often than FromRow. Still, it’s good to know it exists.
+
+*  **The ST type**
+The ST type generalizes the behavior you see in STUArray. The STUArray type relies primarily on three actions: newArray, readArray, and writeArray. For the ST type, these are replaced with the more general functions: newSTRef, readSTRef, and writeSTRef. Likewise, instead of runSTUArray, you use runST. Here’s a simple example of a swapST function that statefully swaps the values of two variables in a 2-tuple:
+
+```
+swapST :: (Int,Int) -> (Int,Int)
+swapST (x,y) = runST $ do
+   x' <- newSTRef x
+   y' <- newSTRef y
+   writeSTRef x' y
+   writeSTRef y' x
+   xfinal <- readSTRef x'
+   yfinal <- readSTRef y'
+   return (xfinal,yfinal)
+```
+
+Just as with STUArray, the primary purpose of all ST types is to allow you to implement perfectly encapsulated, stateful computation.
