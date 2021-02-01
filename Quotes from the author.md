@@ -19,3 +19,18 @@ Both OOP design patterns and category theoretic type classes abstract out common
 * " The great thing about Either is that because the Left constructor can be any type, there’s no limit to how expressive you can be. If you wanted to, you could return a function!"
 
 * "Also notice that Query is its own type. You’ve been treating your queries as strings, but this is all thanks to the OverloadedStrings extension, which is automatically translating for you."
+
+
+* **The ToRow type class**
+You can also use the ToRow type class. But ToRow is much less useful, because it transforms your data types into a tuple of values. As you can see from our examples of creating and updating values, you either don’t have all the information you need (in the case of creating) or need only a specific subset. For reference, here’s how to make Tool an instance of ToRow (note that you need to import Data.Text as T):
+
+```
+instance ToRow Tool where
+   toRow tool = [ SQLInteger $ fromIntegral $ toolId tool
+                , SQLText $ T.pack $ name tool
+                , SQLText $ T.pack $ description tool
+                , SQLText $ T.pack $ show $ lastReturned tool
+                , SQLInteger $ fromIntegral $ timesBorrowed tool ]
+```
+                
+The SQLText and SQLInteger constructors transform Haskell Text and Integer types to SQL data. In practice, you’ll likely use ToRow much less often than FromRow. Still, it’s good to know it exists.

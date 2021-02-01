@@ -1,3 +1,16 @@
+* Use ```pure```
+
+Example,
+```
+   userId <- pure read <*> getLine
+```
+Don't use (read :: Int),
+
+or in Maybe context (Just value) if you wanna put something in a context
+
+
+* "When you use >>=, you’re passing an argument in a context; the >> operator is used when you want to chain together actions and disregard their output." 
+
 * if you wanna print  (ie ```Show```) random types to the screen -- Use ```print```,
 not ```putStrLn```
 

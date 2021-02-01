@@ -3064,4 +3064,115 @@ printUsers = do
 
 ### More query examples, and a meta query executor
 
-*in progress*
+We can write a general function which can take a query and execute it,
+```
+-- can execute all queries returning a tool
+printToolQuery :: Query -> IO ()
+printToolQuery query = withConn "tools.db" $
+                        ( \ conn -> 
+                                    do
+                                    values <- query_ conn query :: IO [Tool]
+                                    mapM_ print values)
+```
+
+Example use,
+```
+> printToolQuery "Select * from tools"
+1.) hammer
+ description: hits stuff
+ last returned: 2021-01-01
+ times borrowed: 0
+
+2.) saw
+ description: cuts stuff
+ last returned: 2021-01-01
+ times borrowed: 0
+ ```
+									
+## Updating records
+
+To update records we need to
+- Retrieve the record, and convert it to a haskell object
+- Update the object with the new values
+- Run an ```UPDATE``` query via an IO Action to update the record
+- Write a function which calls the functions above, i.e. orchestrating the whole thing
+
+
+## Retrieve the record, and convert it to a haskell object
+```
+-- first obtain the tool
+selectTool :: Connection -> Int -> IO (Maybe Tool)
+selectTool conn toolId = do
+   resp <- query conn
+           "SELECT * FROM tools WHERE id = (?)"
+           (Only toolId) :: IO [Tool]
+   return $ firstOrNothing resp
+
+firstOrNothing :: [a] -> Maybe a
+firstOrNothing [] = Nothing
+firstOrNothing (x:_) = Just x
+```
+
+## Update the object with the new values
+```
+-- then update the tool (the Haskell type)
+updateTool :: Tool -> Day -> Tool
+updateTool tool date = tool
+   { lastReturned = date
+   , timesBorrowed = 1 + timesBorrowed tool
+   }
+```
+
+## Put the object in the DB (update query)
+```
+-- then put this new tool values in the DB,
+updateOrWarn :: Maybe Tool -> IO ()
+updateOrWarn Nothing = print "id not found"
+updateOrWarn (Just tool) =  withConn "tools.db" $
+                 \conn -> do
+                          let q = mconcat ["UPDATE TOOLS SET  "
+                                              ,"lastReturned = ?,"
+                                              ," timesBorrowed = ? "
+                                              ,"WHERE ID = ?;"]
+
+                                  execute conn q (lastReturned tool
+                                             , timesBorrowed tool
+                                             , toolId tool)
+                              
+							      print "tool updated"
+```
+
+
+## Putting all these methods together
+```
+updateToolTable toolId = do
+                         conn <- open "tools.db"
+                         chosenTool <- selectTool conn toolId
+                         currentDate <-  utctDay <$> getCurrentTime  
+                         let newTool = (fmap updateTool chosenTool) <*> 
+						 						(pure currentDate) 
+						 
+								-- we need a Maybe type for date ^
+								-- don't use Just, use pure to convert
+
+                         -- nowt hat we have our updated tool,
+                         -- we can use, updateOrWarn ::  Maybe Tool -> IO ()
+                         -- newTool is a MaybeTool, 
+						 -- and updateOrWarn takes just that as a parameter
+						 
+                         updateOrWarn newTool
+                         close conn
+```						 
+
+
+### Deleting records,
+
+```
+checkin :: Int -> IO ()
+checkin toolId =  withConn "tools.db" $
+                     \conn -> do
+                       execute conn
+                         "DELETE FROM checkedout WHERE tool_id = (?);"
+                         (Only toolId)
+```
+
