@@ -221,9 +221,70 @@ updateToolTable toolId = do
 
 
 
+-------------------------------
+-------------------------------
+-------------------------------
+-- Deleting records -------------
+checkin :: Int -> IO ()
+checkin toolId =  withConn "tools.db" $
+                     \conn -> do
+                       execute conn
+                         "DELETE FROM checkedout WHERE tool_id = (?);"
+                         (Only toolId)
+
+checkinAndUpdate :: Int -> IO ()
+checkinAndUpdate toolId = do
+   checkin toolId
+   updateToolTable toolId
+-- why? so that it can update that the tool was borrowed, it deletes the tool from the checkout entries   
+
+------------------------------------------
+------------------------------------------
+------------------------------------------
+--- Creating a User Interface of sorts ---
+
+
+
+
+promptAndAddUser :: IO ()
+promptAndAddUser = do
+   print "Enter new user name"
+   userName <- getLine
+   addUser userName
+
+promptAndCheckout :: IO ()
+promptAndCheckout = do
+   print "Enter the id of the user"
+   userId <- pure read <*> getLine
+   print "Enter the id of the tool"
+   toolId <- pure read <*> getLine
+   checkout userId toolId
+
+promptAndCheckin :: IO ()
+promptAndCheckin = do
+   print "enter the id of tool"
+   toolId <- pure read <*> getLine
+   checkinAndUpdate toolId
+
+
+performCommand :: String -> IO ()
+performCommand command
+   | command == "users" = printUsers >> main
+   | command == "tools" = printTools >> main
+   | command == "adduser" = promptAndAddUser >> main
+   | command == "checkout" = promptAndCheckout >> main
+   | command == "checkin" = promptAndCheckin >> main
+   | command == "in" = printAvailable >> main
+   | command == "out" = printCheckedout >> main
+   | command == "quit" = print "bye!"
+   | otherwise = print "Sorry command not found" >> main
+
 
 
 
 
 main :: IO ()
-main = putStrLn "hi"
+main = do
+   print "Enter a command"
+   command <- getLine
+   performCommand command
