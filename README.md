@@ -3242,8 +3242,89 @@ We use a function called ```accum``` defined in ```Data.Array.Base```. This func
 
 Add 1000 to each element in our UArray,
 ```
-newArray1000 = accum (+) newArray $ zip [0 .. 3] $ cycle [1000]
+newArray1000 = accum (+) updatedArray $ zip [0 .. 3] $ cycle [1000]
 ```
 
 
 
+# STUArray
+
+
+Efficient array algorithms _require_ us to change state of the array. 
+
+```STUArray``` is a special type of ```UArray```. "The STUArray uses a more general type called ST. ST allows for stateful, nonlazy programming." STUArrays are a type of monad. STUArray lets us change values in a UArray.
+
+To use STUArrays, we import
+```
+import Data.Array.ST
+import Control.Monad
+import Control.Monad.ST
+```
+
+In a STUArray context, you can perform stateful computations.  Although this is **not** a hack that will let us disregard FP principles. We can only use STUArray only when the _statefulness_ is indistinguishable from pure functional code for the "users" of our functions.
+
+We implement a function ```listToSTUArray```, that takes a list of Ints and transforms the list into an STUArray.
+
+To help us with that,  we will use the ```writeArray``` function, which takes an STUArray, an index, and a value. This is the **crux**. ```writeArray``` performs a stateful mutation of the underlying array _without creating a copy of the array!_
+
+We also use ```newArray``` function, which takes a pair representing the bounds of the array as well as a value for initializing the array. This returns an empty STUArray the specified size. 
+
+```
+listToSTUArray :: [Int] -> ST s (STUArray s Int Int)
+listToSTUArray vals = do
+    let end =  length vals - 1
+    myArray <- newArray (0,end) 0
+    forM_ [0 .. end] $ \i -> do             
+      let val = vals !! i                   
+      writeArray myArray i val              
+    return myArray
+```
+- In ```newArray (0,end) 0``` we are initializing the empty STUArray.
+- Next in a ```forM_``` we extract values from ```vals```, and then write them to our STUArray ```myArray``` using the function ```writeArray```.
+- In the end, we return this the array back to its context.
+
+On trying to print the STUArray, we get
+```
+GHCi> listToSTUArray [1,2,3]
+<<ST action>>
+```
+
+
+## Taking STUArrays out of the context
+The ```ST``` context is much safer than ```IO```, as referential integrity still holds. So, haskell lets us take these arrays out of the context, via
+```
+runSTUArray :: ST s (STUArray s i e) -> UArray i e
+```
+
+Example,
+```
+> runSTUArray ( listToSTUArray [1,2,3] )
+array (0,2) [(0,1),(1,2),(2,3)]
+```
+
+We can create a wrapper,
+```
+listToUArray :: [Int] -> UArray Int Int
+listToUArray vals = runSTUArray $ listToSTUArray vals
+```
+
+Quote, "STUArray forces us to maintain perfect encapsulation, we can leave the context of the STUArray without violating any of the core rules of functional programming"
+
+
+
+We can combine ```runSTUArray``` with our original function,
+```
+listToUArray_ :: [Int] -> UArray Int Int
+listToUArray_ vals = runSTUArray $ do
+    let end =  length vals - 1
+    myArray <- newArray (0,end) 0
+    forM_ [0 .. end] $ \i -> do
+        let val = vals !! i
+        writeArray myArray i val
+    return myArray
+```
+
+
+## Bubble Sort using STUArray 
+
+*in progress*
