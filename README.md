@@ -3176,3 +3176,74 @@ checkin toolId =  withConn "tools.db" $
                          (Only toolId)
 ```
 
+# Arrays in Haskell: UArray
+
+There is a context for performing mutation on an array by using the ```STUArray``` type. Basically, _stateful_ mutation. 
+
+First we look at ```UArray```, it is a non-lazy Array.
+
+Lazy evaluation can get real inefficient. If you're performing operations (using map) on a List: haskell won't compute the values until absolutely needed, but it will _store_ all sorts (what all?) data on the computations that _might_ be done in the future.
+And on doing these computation, it will take a longer because lists (lazy evaluation) are linked lists.
+
+## Creating a UArray
+To use the UArray type class, we ```import Data.Array.Unboxed```. (And add ```array``` to the list of build-depends if we're using stack.)
+
+It has the kind ```UArray :: * -> * -> *```, the two other types it accepts are 
+- the first, type of the index. Must be an Enum and Bounded. Example, Char, Int, Bool
+- the second,  is for the type of the value.
+Example, ```zeroIndexArray :: UArray Int Bool```
+
+To create a UArray, we use the ```array``` fxn. Takes two arguments. One, is a tuple ```(lowerbound, upperbound)```. Second, the list of  values you wanna put in your array ```[(index,value)]```. 
+```
+> :t array 
+array :: (IArray a e, Ix i) => (i, i) -> [(i, e)] -> a i e
+```
+For values that you don't explicitly add to your array. Haskell will put in a default value.
+
+To **look up values** in your UArray by using the ! operator,
+```
+n> zeroIndexArray ! 1
+True
+*Main> zeroIndexArray ! 2
+False
+*Main> zeroIndexArray ! 3
+False
+```
+
+Creating an array whose index starts from 1 is trivial,
+```
+oneIndexArray :: Int ->  UArray Int Int
+oneIndexArray up = array (1,up) $ zip [1..up] [1..up]
+
+test1 = oneIndexArray 5
+```
+
+
+## Updating the UArray
+Array is updated like other functional data structures. By creating a copy of the original array with the modified values.
+
+```
+beansInBuckets :: UArray Int Int
+beansInBuckets = array (0,3) [] -- initializes everything to zero
+```
+
+We use the ```//``` operator to modify a UArray, example,
+```
+newArray = beansInBuckets // \[(1,9),(3,11)\]
+```
+Now, ```newArray``` equals ```array (0,3) [(0,0),(1,9),(2,0),(3,11)]```.
+
+
+### Modify _all_ elements of the UArray
+We use a function called ```accum``` defined in ```Data.Array.Base```. This function takes in three arguments
+- a binary operation
+- a UArray
+- an indexed list of values to apply to the UArray to ```[(0,1),(0,2),(0,3)]``` etc
+
+Add 1000 to each element in our UArray,
+```
+newArray1000 = accum (+) newArray $ zip [0 .. 3] $ cycle [1000]
+```
+
+
+

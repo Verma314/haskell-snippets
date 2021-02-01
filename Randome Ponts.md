@@ -123,3 +123,25 @@ stack new projectname --resolver=lts-3.11
 
 More info on stackage, resolver etc:
 https://stackoverflow.com/questions/33446558/understanding-haskells-stack-program-and-the-resolver-and-lts-version/33447434
+
+
+* Arrays,
+To **look up values** in your UArray by using the ! operator,
+```
+n> zeroIndexArray ! 1
+True
+*Main> zeroIndexArray ! 2
+```
+
+
+* Modifying a UArray, 
+
+```
+beansInBuckets :: UArray Int Int
+beansInBuckets = array (0,3) [] -- initializes everything to zero
+```
+
+We  use the  // operator to update values in a UArray
+```
+newArray = beansInBuckets // [(1,9),(3,11)]
+```
