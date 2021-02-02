@@ -3327,4 +3327,48 @@ listToUArray_ vals = runSTUArray $ do
 
 ## Bubble Sort using STUArray 
 
-*in progress*
+How do we use UArray in the context of an STUArray?
+
+- We use a function called ```thaw``` which will unfreeze our UArray.
+- We use ```bounds``` fxn, which will give us the bounds of our array.
+- STUArray has a function called readArray that reads a stateful value from an array.
+
+
+```
+-- author's implementation
+bubbleSort :: UArray Int Int -> UArray Int Int
+bubbleSort myArray = runSTUArray $ do
+   stArray <- thaw myArray                             
+   let end = (snd . bounds) myArray                    
+   forM_ [1 .. end] $ \i -> do
+     forM_ [0 .. (end - i)] $ \j -> do
+       val <- readArray stArray j                      
+       nextVal <- readArray stArray (j + 1)
+       let outOfOrder = val > nextVal
+       when outOfOrder $ do                            
+         writeArray stArray j nextVal
+         writeArray stArray (j + 1) val
+   return stArray  
+```
+
+```
+-- my implementation, 
+bubbleSort :: [Int] -> UArray Int Int
+bubbleSort vals = runSTUArray $  do
+                  let end =  length vals - 1
+                  stuArray <- listToSTUArray vals
+                  forM_ [0..end] $ \ j -> do 
+                        forM_ [0..(end-1)] $  \ i -> do 
+                            val1 <- readArray stuArray i
+                            val2 <- readArray stuArray (i+1)
+                            if (val1 > val2) then 
+                                do
+                                writeArray stuArray i val2
+                                writeArray stuArray (i+1) val1
+                            else return ()    
+                  return stuArray  
+```
+
+We are maintaining perfect "encapsulation", even though we are changing state, it is not apparent to the external world.
+Because we can translate our stateful data structure STUArray back to a regular UArray. This lets us treat stateful code as pure functions.
+
