@@ -72,3 +72,87 @@ listToUArray_ vals = runSTUArray $ do
         let val = vals !! i
         writeArray myArray i val
     return myArray
+
+
+{-
+swapST :: (Int,Int) -> (Int,Int)
+swapST (x,y) = runST $ do
+   x' <- newSTRef x
+   y' <- newSTRef y
+   writeSTRef x' y
+   writeSTRef y' x
+   xfinal <- readSTRef x'
+   yfinal <- readSTRef y'
+   return (xfinal,yfinal)
+
+-}
+-- my bubble sort:
+bubbleSort :: [Int] -> UArray Int Int
+bubbleSort vals = runSTUArray $  do
+                  let end =  length vals - 1
+                  stuArray <- listToSTUArray vals
+                  forM_ [0..end] $ \ j -> do 
+                        forM_ [0..(end-1)] $  \ i -> do 
+                            val1 <- readArray stuArray i
+                            val2 <- readArray stuArray (i+1)
+                            if (val1 > val2) then 
+                                do
+                                writeArray stuArray i val2
+                                writeArray stuArray (i+1) val1
+                            else return ()    
+                  return stuArray  
+
+
+-- author's implementation
+bubbleSort2 :: UArray Int Int -> UArray Int Int
+bubbleSort2 myArray = runSTUArray $ do
+   stArray <- thaw myArray                             
+   let end = (snd . bounds) myArray                    
+   forM_ [1 .. end] $ \i -> do
+     forM_ [0 .. (end - i)] $ \j -> do
+       val <- readArray stArray j                      
+       nextVal <- readArray stArray (j + 1)
+       let outOfOrder = val > nextVal
+       when outOfOrder $ do                            
+         writeArray stArray j nextVal
+         writeArray stArray (j + 1) val
+   return stArray                                                                    
+-- they are using ```thaw``` so that they can treat the UArray like a STUArray
+-- (snd. bounds) to get the upper limit
+
+-- exercises,
+
+-- 42.1 crossover
+crossover :: UArray Int Int -> UArray Int Int -> Int -> UArray Int Int
+crossover myArray1 myArray2 pt = runSTUArray $ do 
+                                stuArray1 <- thaw myArray1  :: ST s (STUArray s Int Int)
+                                stuArray2 <- thaw myArray2  :: ST s (STUArray s Int Int)
+                                let end = (snd . bounds) myArray1
+                                myArray <- newArray (0, end) 0 
+                                forM_ [0..end] $ \ i -> do
+                                                        value1 <- readArray stuArray1 i
+                                                        value2 <- readArray stuArray2 i
+                                                        if i < pt then
+                                                            writeArray myArray i  value1
+                                                        else 
+                                                            writeArray myArray i value2
+                                return myArray                                                                                                                  
+
+
+
+
+
+
+--Write a function that takes a UArray Int Int as an input.
+--  The input will have a mixture of zeros and other values. 
+-- The function, replaceZeros, should return the array with all of the zeros replaced with the value –1.
+modifyArr :: UArray Int Int -> UArray Int Int
+modifyArr myArray = runSTUArray $ do
+                        stuArray <- thaw myArray :: ST s (STUArray s Int Int)
+                        let end = (snd . bounds) myArray
+                        forM_ [0..end] $ \ i -> do 
+                                                val <- readArray stuArray i 
+                                                if (val == 0 )
+                                                then writeArray stuArray i (-1)
+                                                else return ()
+                        return stuArray                                                

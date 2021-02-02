@@ -3229,7 +3229,7 @@ beansInBuckets = array (0,3) [] -- initializes everything to zero
 
 We use the ```//``` operator to modify a UArray, example,
 ```
-newArray = beansInBuckets // \[(1,9),(3,11)\]
+newArray = beansInBuckets // [(1,9),(3,11)]
 ```
 Now, ```newArray``` equals ```array (0,3) [(0,0),(1,9),(2,0),(3,11)]```.
 

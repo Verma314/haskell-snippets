@@ -1,3 +1,14 @@
+* if we wanna use ```if``` without the ```else```,
+we use ```when```
+
+
+
+Example,
+
+```
+    when (val == 0) $ do
+      writeArray starray i (-1)
+```      
 * Use ```pure```
 
 Example,
@@ -148,3 +159,19 @@ We  use the  // operator to update values in a UArray
 ```
 newArray = beansInBuckets // [(1,9),(3,11)]
 ```
+* to pull these STUArrays out of ST context, use:
+```
+listToUArray :: [Int] -> UArray Int Int
+listToUArray vals = runSTUArray $ listToSTUArray vals
+```
+
+First convery list to STUArray, then STUArray to UArray
+
+* listArray function is similar to the listToUArry function, but also takes a pair of bounds as input.
+
+```
+myData :: UArray Int Int
+myData = listArray (0,5) [7,6,4,8,10,2]
+```
+
+

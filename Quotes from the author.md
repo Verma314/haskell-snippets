@@ -1,5 +1,7 @@
 Quotes from the author
 
+* " In practice, perfect encapsulation is the same as referential transparency."
+
 * "One important thing to understand about STUArrays and the ST type in general is that they aren’t a hack that allows you to disregard all the functional purity you’ve worked so hard for. STUArray exists to allow you to perform stateful programming only when that statefulness is indistinguishable from pure code for the users of your functions."
 
 * "When you write your file, it’s important to notice that you’re using the raw lazy ByteStrings with L.writeFile rather than the Char8 version LC.writeFile. In lesson 25, we mentioned that when you use binary data that may include Unicode, you should never write it using the Char8 interface, as it can corrupt your data."
