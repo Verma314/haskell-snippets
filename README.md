@@ -3372,3 +3372,24 @@ bubbleSort vals = runSTUArray $  do
 We are maintaining perfect "encapsulation", even though we are changing state, it is not apparent to the external world.
 Because we can translate our stateful data structure STUArray back to a regular UArray. This lets us treat stateful code as pure functions.
 
+
+# Parsec
+
+*in progress*
+
+Example,
+
+```
+x = char ',' :: GenParser Char st Char
+```
+Now,
+```
+> parse x "?" ",,,,,,."
+Right ','
+
+> parse x "?" "ABC"
+Left "?" (line 1, column 1):
+unexpected "A"
+expecting ","
+```
+parse returns an either, the second example does not find a ```,``` and returns a Left Error. The firsr example finds a ```,``` and says that the parsing was successful ```Right ','```
