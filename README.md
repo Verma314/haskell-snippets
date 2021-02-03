@@ -3375,7 +3375,15 @@ Because we can translate our stateful data structure STUArray back to a regular 
 
 # Parsec
 
-*in progress*
+* myParser :: GenParser Char st [String]
+
+When definning a GenParser, the above type signature means, we are accepting a sequence of characters, 
+and returning a list of strings.
+
+
+All these miniparsers are bascially "splitting" input strings based on various parameters.
+
+Check the comments on ```49parsec.hs``` for theory.
 
 Example,
 
@@ -3393,3 +3401,81 @@ unexpected "A"
 expecting ","
 ```
 parse returns an either, the second example does not find a ```,``` and returns a Left Error. The firsr example finds a ```,``` and says that the parsing was successful ```Right ','```
+
+
+* The ```many``` function,
+```
+cell = many (noneOf ",\n") 
+```
+
+```cell``` parses input till it encounters a "," or "\n"
+
+Many takes a parsing function, and applies it over and over again.
+noneOf is a parser which parses anything except for ```,``` and ```\n```
+
+the resulting ```cell``` parser will parse till it finds the ',' or '\n', and then returns everything it found before the ',' or '\n'
+
+
+
+## The sepBy and endBy Combinators
+
+* ```sepBy``` function
+
+The function takes two arguments. One, is a parser that can parse "some sort of content". Two, is another parser that parses for a separator.
+
+It tries to parse content, and then tries to parse a separator, and then back and forth; until it cant parse a separator. And returns a list of content that it was able to parse.
+
+* ```endBy``` function
+
+this is same as ```sepBy```, except it expects that last element to be followed by a separator. 
+That is, it continues parsing content until it can't parse any more content.
+
+We use "endBy" to parse lines, since every line must end with the end-of-line character. 
+
+Due to these both functions,
+the parser can be written more succintly,
+
+```
+import Text.ParserCombinators.Parsec
+
+csvFile = endBy line eol
+line = sepBy cell (char ',')
+cell = many (noneOf ",\n") 
+eol = char '\n'
+
+parseCSV :: String -> Either ParseError [[String]]
+parseCSV input = parse csvFile "(unknown)" input
+```
+
+Testing,
+```
+> parseCSV "1,2,3\n4,5,6\n7,8,9\n"
+Right [["1","2","3"],["4","5","6"],["7","8","9"]]
+```
+
+
+From the book,
+* A  ```csvFile``` contains 0 or more lines,  
+each of which is terminated by the end-of-line character.
+
+* A ```line``` contains 1 or more cells, separated by a comma. 
+
+* A ```cell``` contains 0 or more characters, which must be neither the comma nor the end-of-line character. 
+
+* The end-of-line character is the newline, ```\n```
+
+
+You can give all these mini parsers to the ```parse``` function and test them out,
+
+```
+>parse eol "(unknown)" "blahblah\n"
+Left "(unknown)" (line 1, column 1):
+unexpected "b"
+expecting "\n"
+
+> parse eol "(unknown)" "\n"
+Right '\n'
+>
+```
+## Choices and Errors
+
