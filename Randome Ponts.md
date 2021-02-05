@@ -1,3 +1,14 @@
+* 
+```
+(====>) :: Int -> Int -> Int
+a ====> b = a + b
+```
+
+test,
+```
+> 1 ====> 5
+6
+```
 * if we wanna use ```if``` without the ```else```,
 we use ```when```
 
