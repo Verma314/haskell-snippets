@@ -1,4 +1,5 @@
 import Text.ParserCombinators.Parsec
+--import Text.Parsec.Prim.Parsec
 -- :set -package parsec
 
 
@@ -41,3 +42,15 @@ cells = sepBy (many (noneOf ",\n")) (char ',')
 
 
 -}
+
+--myParser :: Text.Parsec.Prim.Parsec String () String 
+myParser = try (string "aditya" >> return "is cool")  
+       <|> try (string "awesom" >> return "is also cool")
+       <|> fail "Couldn't find coolness"
+-- works on both aditya and awesome,
+-- why "try"? because without which 
+ -- <|> would only attempts the option on the right if the option on the left consumed **no input.**
+
+myParser2 = try (string "aditya" >> return "is cool")  
+       <|> try (string "awesom" >> return "is also cool")
+       <?> "Couldn't find coolness"       

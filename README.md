@@ -3535,7 +3535,105 @@ Right '\n'
 >
 ```
 
-## Choices and Errors
+## Choices and Errors. Matching multiple characters
 
+* There is a parser called string that we can use to match the multi-character patterns.
+
+
+```
+> parse (string "aditya") "source:ghci" "adityaaa."
+Right "aditya"
+*Main> parse (string "aditya") "source:ghci" "_adityaaa."
+Left "source:ghci" (line 1, column 1):
+unexpected "_"
+expecting "aditya"
+*Main> 
+```
+
+* What if we want a choice? We want our parsing "automata" to accept multiple sequences of characters.
+
+We use ```<|>```.
+Note type signature as well. In the Parsec context, we are expecting string as input, and outputting Strings too.
+
+```
+myParser :: Text.Parsec.Prim.Parsec String () String ; 
+myParser = (string "aditya") <|> (string "awesom")
+```
+The above does not work. Somehow. Idk why.
+```
+> parse myParser "source:ghci" "adit"Left "source:ghci" (line 1, column 1):
+unexpected end of input
+expecting "aditya"
+```
+
+Actually,  <|> only attempts the option on the right if the option on the left consumed **no input.**
+```
+*Main> myParser :: Text.Parsec.Prim.Parsec String () String ; myParser = (string "aditya") <|> (string "zezima")
+*Main> 
+*Main> parse myParser "source:ghci" "zezimaaa"Right "zezima"
+*Main> parse myParser "source:ghci" "adityaaa"
+Right "aditya"
+*Main> parse myParser "source:ghci" "ergfdsafeg"
+Left "source:ghci" (line 1, column 1):
+unexpected "e"
+expecting "aditya" or "zezima"
+*Main> 
+```
+
+
+* This below also does work on multiple types of inpts, we can give this parser both "aditya", and "awesom" and it accepts both.
+```
+myParser :: Text.Parsec.Prim.Parsec String () String ; 
+myParser = try (string "aditya") <|> try (string "awesom")
+```
+
+* Note that inside these parsers you can even return all sorts of cool stuff, like,
+
+```
+myParser :: Text.Parsec.Prim.Parsec String () String ;  
+myParser = try (string "aditya" >> return "is cool")  
+       <|> try (string "awesom" >> return "is also cool")
+       <|> return "your input wasnot cool, but parser wont fail"
+
+
+```
+
+Testing it,
+```
+> parse myParser "source:ghci" "aditya"
+Right "is cool"
+
+> parse myParser "source:ghci" "awesomeeee"
+Right "is also cool"
+
+> parse myParser "source:ghci" "what"
+Right "your input wasnot cool, but parser wont fail"
+```
+
+* An alternative:
+```
+myParser :: Text.Parsec.Prim.Parsec String () String ;  
+myParser = try (string "aditya" >> return "is cool")  
+       <|> try (string "awesom" >> return "is also cool")
+       <|> fail "Couldn't find coolness"
+```
+
+Will give us,
+```
+> parse myParser "source:ghci" "what"
+Left "source:ghci" (line 1, column 1):
+unexpected "w"
+expecting "aditya" or "awesom"
+Couldn't find coolness
+```
+
+* Alternatively,
+```
+myParser :: Text.Parsec.Prim.Parsec String () String ;  
+myParser = try (string "aditya" >> return "is cool")  
+       <|> try (string "awesom" >> return "is also cool")
+       <?> "Couldn't find coolness"
+
+```
 
 
