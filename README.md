@@ -3397,24 +3397,38 @@ Same as (>>=) except it ignores the output from ```a```.
 
 # Parsec
 
-* myParser :: GenParser Char st [String]
+Type signature of a Parser
+```myParser :: GenParser Char st [String]```
 
-When definning a GenParser, the above type signature means, we are accepting a sequence of characters, 
-and returning a list of strings.
+We are in the GenParser context, it reads individual Chars and returns out lists of Strings.
+
+
+
+
+* The ```many``` function
+
+Takes a fxn as argument. 
+
+"It tries to repeatedly parse the input using the function passed to it.
+It gathers up the results from all that repeated parsing and returns a list of them. 
+"
+
+* the line parser is just a bunch on cells
+
 
 
 All these miniparsers are bascially "splitting" input strings based on various parameters.
 
 Check the comments on ```49parsec.hs``` for theory.
 
-Example,
+Examples,
 
 ```
 x = char ',' :: GenParser Char st Char
 ```
 Now,
 ```
-> parse x "?" ",,,,,,."
+> parse x "(source)" ",,,,,,."
 Right ','
 
 > parse x "?" "ABC"
@@ -3425,7 +3439,7 @@ expecting ","
 parse returns an either, the second example does not find a ```,``` and returns a Left Error. The firsr example finds a ```,``` and says that the parsing was successful ```Right ','```
 
 
-* The ```many``` function,
+* The ```many``` function to parse a cell
 ```
 cell = many (noneOf ",\n") 
 ```
@@ -3443,13 +3457,34 @@ the resulting ```cell``` parser will parse till it finds the ',' or '\n', and th
 
 * ```sepBy``` function
 
-The function takes two arguments. One, is a parser that can parse "some sort of content". Two, is another parser that parses for a separator.
+The function takes two parsers. 
 
-It tries to parse content, and then tries to parse a separator, and then back and forth; until it cant parse a separator. And returns a list of content that it was able to parse.
+One, is a parser that can parse "some sort of content". 
+Two, is another parser that parses for a separator.
+
+It tries to parse content, and then tries to parse a separator, and then back and forth; until it cant parse a separator.
+
+And  then returns a list of content that it was able to parse.
+
+
+Where can we use it? To parse lines separated by "\n". To parse cells which are separated by ","
+
+example,
+```
+cell = many (noneOf ",\n")
+-- ^ extracts out a single cell from a line (basically till it reaches "," or "\n")
+line = sepBy cell (char ',')
+-- ^ extracts out a whole line. a line is separated by "cell" and ","
+
+csvFile = endBy line (char '\n')
+-- ^ extracts out the lines, separated by '\n'
+```
+
+(see 54parserExperiment.hs) for more info.
 
 * ```endBy``` function
 
-this is same as ```sepBy```, except it expects that last element to be followed by a separator. 
+this is same as ```sepBy```, except it expects that last element should also be followed by a separator. 
 That is, it continues parsing content until it can't parse any more content.
 
 We use "endBy" to parse lines, since every line must end with the end-of-line character. 
@@ -3499,5 +3534,8 @@ expecting "\n"
 Right '\n'
 >
 ```
+
 ## Choices and Errors
+
+
 
