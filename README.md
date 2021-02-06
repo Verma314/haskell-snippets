@@ -3372,6 +3372,28 @@ bubbleSort vals = runSTUArray $  do
 We are maintaining perfect "encapsulation", even though we are changing state, it is not apparent to the external world.
 Because we can translate our stateful data structure STUArray back to a regular UArray. This lets us treat stateful code as pure functions.
 
+#  Monads, revisited
+
+
+"...three properties, and a few rules about how we can use them together, that define a monad in Haskell. Let's revisit the above list in condensed form.
+
+1. A type constructor m.
+
+2. A function of type m a -> (a -> m b) -> m b for chaining the output of one function into the input of another. No comments
+
+3. A function of type a -> m a for injecting a normal value into the chain, i.e. it wraps a type a with the type constructor m.
+
+## Implementation of ```>>``
+
+The ```>>``` function,
+
+```
+    (>>) :: m a -> m b -> m b
+    a >> f = a >>= \_ -> f
+```
+
+Same as (>>=) except it ignores the output from ```a```. 
+
 
 # Parsec
 

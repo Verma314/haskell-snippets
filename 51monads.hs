@@ -45,6 +45,10 @@ newtype Parse a = Parse {
 -- i.e does not change the ParseState
 identity :: a -> Parse a
 identity a = Parse (\s -> Right (a, s))   
+-- identity is like the ```Just```, except slightly more complex
+    -- just like how Just is a wrapper around any type
+        -- similarly, identity helps us create a wrapper (of Parse) around a type
+            -- they're both an injector: inject :: a -> m a
 
 
 -- the parse function,
@@ -215,3 +219,24 @@ main = do
 myParser01 = identity (L8.pack "a_sentence_to_parser")
 myRawParserFunction = runParse myParser01  -- extract the function out
 output_ =  myRawParserFunction (ParseState bcInt  0)
+
+
+
+{-
+Three properties that make the Parse type a monad are
+
+For Parse, the corresponding properties are 
+1. the type constructor Parse a, 
+2. the chaining function (==>), 
+3. and the injector function identity. 
+
+
+if we wanna make Parse a monad _formally_,
+    we can do something like this:
+
+instance Monad Parse where
+    return = identity
+    (>>=) = (==>)
+    fail = bail    
+    
+-}

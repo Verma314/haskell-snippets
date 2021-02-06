@@ -1,4 +1,26 @@
-Quotes from the author
+Quotes from Real World Haskell,
+
+### Jargon on Monads
+
+“Monadic” simply means “pertaining to monads”. A monadic type is an instance of the Monad typeclass; a monadic value has a monadic type. 
+
+When we say that a type “is a monad”, this is really a shorthand way of saying that it's an instance of the Monad typeclass. Being an instance of Monad gives us the necessary monadic triple of type constructor, injection function, and chaining function. 
+
+In the same way, a reference to “the Foo monad” implies that we're talking about the type named Foo, and that it's an instance of Monad.
+
+An “action” is another name for a monadic value. This use of the word probably originated with the introduction of monads for I/O, where a monadic value like print "foo" can have an observable side effect. A function with a monadic return type might also be referred to as an action, though this is a little less common.
+
+
+
+
+
+
+
+
+
+
+
+Quotes from Get Programming in Haskell,
 
 * " In practice, perfect encapsulation is the same as referential transparency."
 
