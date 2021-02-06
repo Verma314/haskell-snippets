@@ -8,7 +8,7 @@ When we say that a type “is a monad”, this is really a shorthand way of sayi
 
 In the same way, a reference to “the Foo monad” implies that we're talking about the type named Foo, and that it's an instance of Monad.
 
-An “action” is another name for a monadic value. This use of the word probably originated with the introduction of monads for I/O, where a monadic value like print "foo" can have an observable side effect. A function with a monadic return type might also be referred to as an action, though this is a little less common.
+An “action” is another name for a monadic value. This use of the word probably originated with the introduction of monads for I/O, where a monadic value like print "foo" can have an observable side effect. A function with a monadic return type might also be referred to as an action, though this is a little less common.ǹ
 
 
 
