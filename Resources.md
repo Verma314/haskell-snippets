@@ -1,3 +1,10 @@
+# Parsers
+
+* More info here: http://book.realworldhaskell.org/read/using-parsec.html
+
+
+
+
 # Monads
 * https://github.com/afroisalreadyinu/real-world-haskell-chapter-10
 
