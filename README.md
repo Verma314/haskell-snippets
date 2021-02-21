@@ -998,6 +998,16 @@ hi
 ```
 
 
+Another example of using mapM,
+
+```
+> x = mapM ( Just . (+1 ) . read) ["1","2","3"] 
+> x
+Just [2,3,4]
+> :t x
+x :: (Num b, Read b) => Maybe [b]
+```
+
 * To get input from ghci itself, 3 times:
 ```
 main :: IO()

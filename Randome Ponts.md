@@ -91,7 +91,7 @@ map lets you use monadic functions in the 2d argument.
 
 And then wraps the result also in a monadic context.
 
-todo: confirm this, get more info here
+todo: confirm this, get more info here.
 
 ```
 > x = mapM_ (putStrLn . show .(+ 1) . read )  ["1","2"]
