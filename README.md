@@ -1,6 +1,6 @@
-# haskell-snippets
+# haskell-snippets, a haskell cheatsheet
 
-Notes I made, for quick reference and memory, while reading and solving exercises from ```Will Kurt's Get Programming in Haskell```
+Notes I made, for quick reference and memory, while reading and solving exercises from ```Will Kurt's Get Programming in Haskell```, Monads and Parsing from ```Real World Haskell```
 
 ## One liners 
 
