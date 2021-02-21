@@ -3559,14 +3559,14 @@ Note type signature as well. In the Parsec context, we are expecting string as i
 myParser :: Text.Parsec.Prim.Parsec String () String ; 
 myParser = (string "aditya") <|> (string "awesom")
 ```
-The above does not work. Somehow. Idk why.
+The above does not work. 
 ```
 > parse myParser "source:ghci" "adit"Left "source:ghci" (line 1, column 1):
 unexpected end of input
 expecting "aditya"
 ```
 
-Actually,  <|> only attempts the option on the right if the option on the left consumed **no input.**
+Actually, the reason is, <|> only attempts the option on the right if the option on the left consumed **no input.**
 ```
 *Main> myParser :: Text.Parsec.Prim.Parsec String () String ; myParser = (string "aditya") <|> (string "zezima")
 *Main> 

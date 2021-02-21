@@ -83,7 +83,15 @@ forM_ [1,2,3,4,5] print
 Search Control.Monad, revisit what ```mapM_``` does
 
 
-mapM_ takes two argume
+mapM_ takes two arguments, and applies the function on the elements of the list. 
+
+How does it differ from the regular ```map```?
+
+map lets you use monadic functions in the 2d argument.
+
+And then wraps the result also in a monadic context.
+
+todo: confirm this, get more info here
 
 ```
 > x = mapM_ (putStrLn . show .(+ 1) . read )  ["1","2"]
